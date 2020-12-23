@@ -6,14 +6,14 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="dbscan",
-    version="0.0.3",
+    version="0.0.4",
     author="Yiqiu Wang",
     author_email="yiqiu_wang@icloud.com",
     description="Theoretically efficient and practical parallel DBSCAN",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/wangyiqiu/dbscan-python",
-    packages=[''],
+    packages=setuptools.find_packages(),
     package_dir={'': '.'},
     package_data={'': ['dbscan/DBSCAN.cpython-38-x86_64-linux-gnu.so']},
     classifiers=[

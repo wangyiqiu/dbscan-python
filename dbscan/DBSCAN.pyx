@@ -16,10 +16,11 @@ def DBSCAN(X, double eps=0.5, int min_samples=5):
     if n <= 0:
         return np.array([],dtype=np.int32), np.array([],dtype=np.bool)
 
-    if n > 20000000:
+    if n > 100000000:
         print("Warning: large n, the program behavior might be undefined due to overflow.")
 
     cdef double [:,:] X_view = X
+
     my_instance = new Caller(&X_view[0,0], dim, n)
 
     core_samples = np.empty(n, dtype=np.bool)
