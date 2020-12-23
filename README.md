@@ -5,8 +5,8 @@ This repository contains the fastest Python package for DBSCAN in the Euclidean 
 Our code is faster than the DBSCAN package in Sklearn on a single thread, and provides additional speedup via multi-threading. Below, we show a simple benchmark comparing our code with Sklearn, tested on a 4-core computer, and a visualization of the clustering result. The time saved will be more significant on a larger data set and a machine with more cores.
 
 <p float="left">
-<img src="compare.png" alt="timing" width="300"/>
-<img src="example.png" alt="example" width="300"/>
+<img src="https://github.com/wangyiqiu/dbscan-python/blob/master/compare.png" alt="timing" width="300"/>
+<img src="https://github.com/wangyiqiu/dbscan-python/blob/master/example.png" alt="example" width="300"/>
 </p>
 
 ## Installation
