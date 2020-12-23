@@ -1,1 +1,1 @@
-from DBSCAN import DBSCAN
+from dbscan.DBSCAN import DBSCAN
