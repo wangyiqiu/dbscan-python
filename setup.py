@@ -6,7 +6,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="dbscan",
-    version="0.0.4",
+    version="0.0.5",
     author="Yiqiu Wang",
     author_email="yiqiu_wang@icloud.com",
     description="Theoretically efficient and practical parallel DBSCAN",
@@ -21,5 +21,5 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: POSIX :: Linux",
     ],
-    python_requires='>=3.6',
+    python_requires='>=3.8',
 )
