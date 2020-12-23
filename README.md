@@ -4,6 +4,11 @@ This repository contains the fastest Python package for parallel Euclidean DBSCA
 
 It is much faster than the DBSCAN package in Sklearn on a single thread, and provides additional speedup via multi-threading. We provide some simple benchmark showing the speedup over Sklearn tested on a 4-core computer on a toy data set, and a visualization of the result.
 
+<p float="left">
+<img src="compare.png" alt="timing" width="300"/>
+<img src="example.png" alt="example" width="300"/>
+</p>
+
 ## Installation
 
 The software is written using C++ and made available in Python 3.8+ using a Cython wrapper. It is tested, and should work directly on any fresh copy of Ubuntu 20.04. There are two ways to install it:
