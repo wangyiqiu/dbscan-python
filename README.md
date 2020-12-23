@@ -1,8 +1,8 @@
 ## Overview
 
-This repository contains the fastest Python package for parallel Euclidean DBSCAN clustering. The code automatically uses all available POSIX threads to speedup DBSCAN clustering. It stems from a paper presented in SIGMOD'20: [Theoretically Efficient and Practical Parallel DBSCAN](https://arxiv.org/abs/1912.06255).
+This repository contains the fastest Python package for DBSCAN in the Euclidean distance metric. The code automatically uses all available POSIX threads to speedup DBSCAN clustering. It stems from a paper presented in SIGMOD'20: [Theoretically Efficient and Practical Parallel DBSCAN](https://arxiv.org/abs/1912.06255).
 
-It is much faster than the DBSCAN package in Sklearn on a single thread, and provides additional speedup via multi-threading. We provide some simple benchmark showing the speedup over Sklearn tested on a 4-core computer on a toy data set, and a visualization of the result.
+Our code is faster than the DBSCAN package in Sklearn on a single thread, and provides additional speedup via multi-threading. Below, we show a simple benchmark comparing our code with Sklearn, tested on a 4-core computer, and a visualization of the clustering result. The time saved will be more significant on a larger data set and a machine with more cores.
 
 <p float="left">
 <img src="compare.png" alt="timing" width="300"/>
@@ -11,10 +11,9 @@ It is much faster than the DBSCAN package in Sklearn on a single thread, and pro
 
 ## Installation
 
-The software is written using C++ and made available in Python 3.8+ using a Cython wrapper. It is tested, and should work directly on any fresh copy of Ubuntu 20.04. There are two ways to install it:
+The software is written using C++ and made available in ***Python 3.8+*** using a Cython wrapper. It is tested, and should work directly on any fresh copy of Ubuntu 20.04. There are two ways to install it:
 * Install it using PyPI: ``pip3 install --user dbscan``
-OR
-* Compile it yourself: First install dependencies ``pip3 install --user Cython numpy`` and ``sudo apt install libpython3-dev``. Navigate to ``dbscan-python/dbscan/``, and run the ''make'' script ``./make.sh``, The compilation will take a few minutes, and generate a ''.so'' library containing the ''DBSCAN'' module.
+* ***OR*** Compile it yourself: First install dependencies ``pip3 install --user Cython numpy`` and ``sudo apt install libpython3-dev``. Navigate to ``dbscan-python/dbscan/``, and run the ''make'' script ``./make.sh``, The compilation will take a few minutes, and generate a ''.so'' library containing the ''DBSCAN'' module.
 
 ## Tutorial
 
