@@ -6,7 +6,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="dbscan",
-    version="0.0.8",
+    version="0.0.9",
     author="Yiqiu Wang",
     author_email="yiqiu_wang@icloud.com",
     description="Theoretically efficient and practical parallel DBSCAN",
@@ -24,7 +24,7 @@ setuptools.setup(
         'Intended Audience :: Developers',
         "License :: OSI Approved :: MIT License",
         'Programming Language :: C++',
-        'Programming Language :: Python :: 3.8'
+        'Programming Language :: Python :: 3.8',
         'Topic :: Software Development',
         'Topic :: Scientific/Engineering',
         "Operating System :: POSIX :: Linux",

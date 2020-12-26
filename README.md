@@ -12,7 +12,7 @@ Our software is faster than all state-of-the-art DBSCAN packages, and provides a
 ## Installation
 
 The software is written using C++ and wrapped using Cython. It is supported on ***64-bit Linux with Python 3.8+*** (it is tested to work directly on a fresh copy of Ubuntu 20.04). There are two ways to install it:
-* Install it using PyPI: ``pip3 install --user dbscan`` (the latest verion is 0.0.8)
+* Install it using PyPI: ``pip3 install --user dbscan`` (the latest verion is 0.0.9)
 * ***OR*** Compile it yourself: First install dependencies ``pip3 install --user Cython numpy`` and ``sudo apt install libpython3-dev``. Navigate to ``dbscan-python/dbscan/``, and run the ''make'' script ``./make.sh``, The compilation will take a few minutes, and generate a ''.so'' library containing the ''DBSCAN'' module.
 
 ## Tutorial
