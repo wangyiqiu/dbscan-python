@@ -10,6 +10,8 @@
 #include "source/pbbs/sampleSort.h"
 #include "source/pbbs/unionFind.h"
 
+// #define VERBOSE
+
 namespace Wrapper {
 
   // Default constructor
@@ -32,6 +34,7 @@ namespace Wrapper {
     typedef cell<dim, pointT> cellT;
 
 #ifdef VERBOSE
+    cout << "Input: " << n << " points, dimension " << dim << endl;
     printScheduler();
     timing tt; tt.start();
     timing t0; t0.start();
@@ -248,7 +251,7 @@ namespace Wrapper {
     else {
       cout << "Error: dimension >20 is not supported." << endl;
     }
-    free(coreFlag2);
+    // free(coreFlag2);
     return labels;
   }
 
