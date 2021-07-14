@@ -19,8 +19,7 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#ifndef KD_TREE_H
-#define KD_TREE_H
+#pragma once
 
 #include <math.h>
 #include <vector>
@@ -28,7 +27,7 @@
 #include "pbbs/utils.h"
 #include "pbbs/sequence.h"
 #include "pbbs/quickSort.h"
-#include "geometry.h"
+#include "point.h"
 #include "kdNode.h"
 
 // *************************************************************
@@ -136,5 +135,3 @@ class kdTree {
   }
 
 };
-
-#endif

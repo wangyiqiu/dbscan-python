@@ -1,8 +1,8 @@
-#include "source/geometry.h"
-#include "source/geometryIO.h"
-#include "source/pbbs/parallel.h"
-#include "source/pbbs/gettime.h"
-#include "source/pbbs/parseCommandLine.h"
+#include "dbscan/point.h"
+#include "dbscan/geometryIO.h"
+#include "dbscan/pbbs/parallel.h"
+#include "dbscan/pbbs/gettime.h"
+#include "dbscan/pbbs/parseCommandLine.h"
 
 #include "Caller.h"
 

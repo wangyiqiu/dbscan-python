@@ -32,11 +32,11 @@ The `<data-file>` can be any CSV-like point data with or without header, see an 
 
 We are developing a Python wrapper, currently using Cython. Right now it is still experimental, as it is only supported on ***Linux on x86_64 with Python 3.8+*** (it is tested to work directly on a fresh copy of Ubuntu 20.04). There are two ways to install it:
 * Install it using PyPI: ``pip3 install --user dbscan`` (the latest verion is 0.0.9)
-* ***OR*** Compile it yourself: First install dependencies ``pip3 install --user Cython numpy`` and ``sudo apt install libpython3-dev``. Navigate to ``dbscan-python/dbscan/``, and run the ''make'' script ``./make.sh``, The compilation will take a few minutes, and generate a ''.so'' library containing the ''DBSCAN'' module.
+* ***OR*** Compile it yourself: First install dependencies ``pip3 install -r src/requirements.txt`` and ``sudo apt install libpython3-dev``. Navigate to ``dbscan-python/src/``, and run the ''make'' script ``./make.sh``, The compilation will take a few minutes, and generate a ''.so'' library containing the ''DBSCAN'' module.
 
-### Pybinding tutorial
+An example is provided in 'src/example.py'. If the dependencies above are installed, simply run 'python3 src/example.py' to reproduce the plots above.
 
-An example API call:
+### Python API
 
 ```
 from dbscan import DBSCAN

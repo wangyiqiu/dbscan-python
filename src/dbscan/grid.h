@@ -21,15 +21,13 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#ifndef GRID_H
-#define GRID_H
+#pragma once
 
 #include "cell.h"
-#include "geometry.h"
+#include "point.h"
 #include "shared.h"
 #include "kdTree.h"
 #include "kdNode.h"
-#include "jeAllocator.h"
 #include "pbbs/sequence.h"
 #include "pbbs/ndHash.h"
 #include "pbbs/sampleSort.h"
@@ -62,11 +60,11 @@ struct grid {
   typedef Table<cellHash<dim, objT>,intT> tableT;
   typedef Table<aFloatHash<dim, objT>,intT> objTableT;
   typedef kdTree<dim, cellT> treeT;
-#ifdef USEJEMALLOC
-  typedef vector<cellT*, je_allocator<intT>> cellBuf;
-#else
+// #ifdef USEJEMALLOC
+//   typedef vector<cellT*, je_allocator<intT>> cellBuf;
+// #else
   typedef vector<cellT*> cellBuf;
-#endif
+  //#endif
 
   static const bool noRandom = true;
 
@@ -217,5 +215,3 @@ struct grid {
   }
 
 };
-
-#endif

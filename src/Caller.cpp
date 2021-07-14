@@ -1,14 +1,14 @@
 #include <iostream>
 #include "Caller.h"
 
-#include "source/geometry.h"
-#include "source/shared.h"
-#include "source/grid.h"
-#include "source/coreBccp.h"
-#include "source/pbbs/gettime.h"
-#include "source/pbbs/parallel.h"
-#include "source/pbbs/sampleSort.h"
-#include "source/pbbs/unionFind.h"
+#include "dbscan/point.h"
+#include "dbscan/shared.h"
+#include "dbscan/grid.h"
+#include "dbscan/coreBccp.h"
+#include "dbscan/pbbs/gettime.h"
+#include "dbscan/pbbs/parallel.h"
+#include "dbscan/pbbs/sampleSort.h"
+#include "dbscan/pbbs/unionFind.h"
 
 // #define VERBOSE
 
@@ -256,3 +256,4 @@ namespace Wrapper {
   }
 
 }
+

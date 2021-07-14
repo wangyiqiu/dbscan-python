@@ -21,10 +21,9 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#ifndef SHARED_H
-#define SHARED_H
+#pragma once
 
-#include "geometry.h"
+#include "point.h"
 #include "pbbs/parallel.h"
 #include "pbbs/sequence.h"
 
@@ -143,4 +142,3 @@ point<dim> pMinParallel(point<dim>* items, intT n) {
     pMin.minCoords(localMin[p].x);}
   return pMin;
 }
-#endif

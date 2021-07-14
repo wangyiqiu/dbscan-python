@@ -1,5 +1,4 @@
-#ifndef _BENCH_GEOM_INCLUDED
-#define _BENCH_GEOM_INCLUDED
+#pragma once
 
 #include <iostream>
 #include <algorithm>
@@ -14,96 +13,23 @@ using namespace std;
 //    any dimensional POINTS
 // *************************************************************
 
-template <int _dim> class point;
-
-template <int _dim> class vect {
-public:
-  typedef double floatT;
-  typedef vect vectT;
-  typedef point<_dim> pointT;
-  floatT x[_dim];
-  static const int dim = _dim;
-  vect() { for (int i=0; i<_dim; ++i) x[i] = 0; }
-  vect(pointT p) { for (int i=0; i<_dim; ++i) x[i] = p.x[i]; }
-  vect(floatT* v) { for (int i=0; i<_dim; ++i) x[i] = v[i]; }
-  void print() {
-    cout << std::setprecision(2);
-    cout << ":(";
-    for (int i=0; i<_dim-1; ++i) cout << x[i] << ",";
-    cout << x[_dim-1] << "):";
-  }
-  vectT operator+(vectT op2) {
-    floatT xx[_dim];
-    for (int i=0; i<_dim; ++i) xx[i]=x[i] + op2.x[i];
-    return vectT(xx);
-  }
-  vectT operator-(vectT op2) {
-    floatT xx[_dim];
-    for (int i=0; i<_dim; ++i) xx[i]=x[i] - op2.x[i];
-    return vectT(xx);
-  }
-  pointT operator+(pointT op2) {
-    floatT xx[_dim];
-    for (int i=0; i<_dim; ++i) xx[i]=x[i] + op2.x[i];
-    return point<dim>(xx);
-  }
-  vectT operator*(floatT s) {
-    floatT xx[_dim];
-    for (int i=0; i<_dim; ++i) xx[i] = x[i]*s;
-    return vectT(xx);
-  }
-  vectT operator/(floatT s) {
-    floatT xx[_dim];
-    for (int i=0; i<_dim; ++i) xx[i] = x[i]/s;
-    return vectT(xx);
-  }
-  floatT& operator[] (int i) {return x[i];}
-  float dot(vectT v) {
-    floatT xx=0;
-    for (int i=0; i<_dim; ++i) xx += x[i]*v[i];
-    return xx;
-  }
-  vectT cross(vectT v) {
-    cout << "lack of standard implementation of cross product fo R^d, see point and vector in 2d and 3d, abort" << endl; abort();
-  }
-  floatT maxDim() {
-    floatT xx = x[0];
-    for (int i=1; i<_dim; ++i) xx = max(xx,x[i]);
-    return xx;
-  }
-  floatT length() {
-    floatT xx=0;
-    for (int i=0; i<_dim; ++i) xx += x[i]*x[i];
-    return sqrt(xx);
-  }
-};
-
 template <int _dim> class point {
 public:
-  typedef double floatT;
-  typedef vect<_dim> vectT;
-  typedef point pointT;
+  using floatT = double;
+  using pointT = point;
+
   floatT x[_dim];
   static const int dim = _dim;
   static constexpr double empty = numeric_limits<double>::max();
+
+  point() { for (int i=0; i<_dim; ++i) x[i]=empty; }
+  point(floatT* p) { for (int i=0; i<_dim; ++i) x[i]=p[i]; }
+  point(pointT* p) { for (int i=0; i<_dim; ++i) x[i]=p->x[i]; }
+
   int dimension() {return _dim;}
   void setEmpty() {x[0]=empty;}
   bool isEmpty() {return x[0]==empty;}
-  point() { for (int i=0; i<_dim; ++i) x[i]=empty; }
-  point(vectT v) { for (int i=0; i<_dim; ++i) x[i]=v[i]; }
-  point(floatT* p) { for (int i=0; i<_dim; ++i) x[i]=p[i]; }
-  point(pointT* p) { for (int i=0; i<_dim; ++i) x[i]=p->x[i]; }
-  void print() {//Deprecate
-    cout << std::setprecision(2);
-    cout << ":(";
-    for (int i=0; i<_dim-1; ++i) cout << x[i] << ",";
-    cout << x[_dim-1] << "):";
-  }
-  pointT operator+(vectT op2) {
-    floatT xx[_dim];
-    for (int i=0; i<_dim; ++i) xx[i] = x[i]+op2.x[i];
-    return pointT(xx);
-  }
+
   pointT operator-(pointT op2) {
     floatT xx[_dim];
     for (int i=0; i<_dim; ++i) xx[i] = x[i]-op2.x[i];
@@ -126,6 +52,7 @@ public:
     return true;
   }
   friend bool operator!=(pointT a, pointT b) {return !(a==b);}
+
   floatT* coordinate() {return x;}
   floatT coordinate(int i) {return x[i];}
   void updateX(int i, floatT val) {x[i]=val;}//Deprecate
@@ -159,11 +86,6 @@ public:
     }
     return false;
   }
-  floatT pointDist(pointT p) {//deprecate
-    floatT xx=0;
-    for (int i=0; i<_dim; ++i) xx += (x[i]-p.x[i])*(x[i]-p.x[i]);
-    return sqrt(xx);
-  }
   inline floatT dist(pointT p) {
     floatT xx=0;
     for (int i=0; i<_dim; ++i) xx += (x[i]-p.x[i])*(x[i]-p.x[i]);
@@ -193,17 +115,8 @@ public:
 };
 
 template <int dim>
-static std::ostream& operator<<(std::ostream& os, const vect<dim> v) {
-  for (int i=0; i<dim; ++i)
-    os << v.x[i] << " ";
-  return os;
-}
-
-template <int dim>
 static std::ostream& operator<<(std::ostream& os, const point<dim> v) {
   for (int i=0; i<dim; ++i)
     os << v.x[i] << " ";
   return os;
 }
-
-#endif // _BENCH_GEOM_INCLUDED

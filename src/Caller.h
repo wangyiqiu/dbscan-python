@@ -1,9 +1,6 @@
-#ifndef CALLER_H
-#define CALLER_H
+#pragma once
 
-#include "source/pbbs/parallel.h"
-
-// #define VERBOSE
+#include "dbscan/pbbs/parallel.h"
 
 namespace Wrapper {
   class Caller {
@@ -17,5 +14,3 @@ namespace Wrapper {
     intT* computeDBSCAN(floatT epsilon, intT minPts, bool* coreFlag, intT* cluster);
   };
 }
-
-#endif

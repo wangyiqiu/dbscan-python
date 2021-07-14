@@ -19,12 +19,11 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#ifndef K_NEAREST_NEIGHBORS
-#define K_NEAREST_NEIGHBORS
+#pragma once
 
 #include "kdNode.h"
 #include "kBuffer.h"
-#include "geometry.h"
+#include "point.h"
 #include "pbbs/parallel.h"
 
 // d-dimensional k-nearest neighbor search using the kdTree
@@ -116,5 +115,3 @@ void kdNode<dim, objT>::kNN(objT* q, intT k, kbufT* out) {
   knnHelper(q, k, out);
   out->sortK();
 }
-
-#endif

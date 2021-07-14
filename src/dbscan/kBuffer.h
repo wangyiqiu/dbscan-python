@@ -19,8 +19,7 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#ifndef K_BUFFER_H
-#define K_BUFFER_H
+#pragma once
 
 #include "pbbs/parallel.h"
 #include "pbbs/sampleSort.h"
@@ -240,5 +239,3 @@ namespace KBuffer {
     free(in);
   }
 }
-
-#endif

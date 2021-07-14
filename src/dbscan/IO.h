@@ -20,8 +20,7 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#ifndef _BENCH_IO
-#define _BENCH_IO
+#pragma once
 
 #include <iostream>
 #include <fstream>
@@ -274,5 +273,3 @@ namespace benchIO {
     return _seq<intT>(A,n);
   }
 };
-
-#endif // _BENCH_IO

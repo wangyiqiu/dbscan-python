@@ -19,8 +19,7 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#ifndef KD_NODE_H
-#define KD_NODE_H
+#pragma once
 
 #include "kBuffer.h"
 
@@ -444,5 +443,3 @@ class kdNode {
   }
 
 };
-
-#endif

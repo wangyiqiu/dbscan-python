@@ -21,7 +21,7 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#include "DBSCAN.h"
+#pragma once
 
 template<int dim, class pointT>
 intT* coreBF(pointT* P, intT n, floatT epsilon, intT minPts) {

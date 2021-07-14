@@ -19,8 +19,7 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#ifndef CELL_H
-#define CELL_H
+#pragma once
 
 #include "grid.h"
 #include "pbbs/ndHash.h"
@@ -162,5 +161,3 @@ struct cellHash {
 
   bool replaceQ(eType c1, eType c2) {return 0;}
 };
-
-#endif
