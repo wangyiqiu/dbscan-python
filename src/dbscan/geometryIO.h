@@ -121,14 +121,18 @@ namespace benchIO {
     words W = stringToWords(S.A, S.n);
 
     long n;
+    double *P;
+
     if (isGenericHeader(W.Strings[0])) {
       n = W.m - 1;
+      P = newA(double, n);
+      parseDouble(W.Strings + 1, P, n);
     } else {
       n = W.m;
+      P = newA(double, n);
+      parseDouble(W.Strings, P, n);
     }
 
-    double *P = newA(double, n);
-    parseDouble(W.Strings + 1, P, n);
     W.del();
     return _seq<double>(P, n);
   }
