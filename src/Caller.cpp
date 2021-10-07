@@ -170,6 +170,7 @@ namespace Wrapper {
     cout << "cluster-border-time = " << t0.next() << endl;
     cout << ">> total-clustering-time = " << tt.next() << endl;
 #endif
+    uf.del();
     free(ccFlag);
     free(trees);
     delete G;
