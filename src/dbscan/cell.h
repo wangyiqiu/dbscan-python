@@ -142,7 +142,15 @@ struct cellHash {
   cellHash(hashFunc* hashFF):hashF(hashFF) {
     e = new cellT();}
 
-  ~cellHash() {}
+  cellHash(const cellHash& rhs) {
+      hashF = rhs.hashF;
+      e = new cellT();
+      *e = *rhs.e;
+  }
+
+  ~cellHash() {
+      delete e;
+  }
 
   eType empty() {return e;}
 
