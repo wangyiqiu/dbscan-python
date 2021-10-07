@@ -219,6 +219,7 @@ namespace Wrapper {
     free(I);
     free(cluster2);
     free(flag);
+    T->del(); // Required to clean-up T's internals
     delete T;
     free(P);
 #ifdef VERBOSE
