@@ -252,7 +252,7 @@ namespace Wrapper {
     else {
       cout << "Error: dimension >20 is not supported." << endl;
     }
-    // free(coreFlag2);
+    free(coreFlag2);
     return labels;
   }
 
