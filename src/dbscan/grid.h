@@ -105,6 +105,7 @@ struct grid {
     parallel_for(0, numCells, [&](intT i) {
 	if(nbrCache[i]) delete nbrCache[i];
       });
+    free(nbrCache);
     if(myHash) delete myHash;
     if(table) {
       table->del();

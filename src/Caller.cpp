@@ -170,6 +170,7 @@ namespace Wrapper {
     cout << "cluster-border-time = " << t0.next() << endl;
     cout << ">> total-clustering-time = " << tt.next() << endl;
 #endif
+    uf.del();
     free(ccFlag);
     free(trees);
     delete G;
@@ -219,6 +220,7 @@ namespace Wrapper {
     free(I);
     free(cluster2);
     free(flag);
+    T->del(); // Required to clean-up T's internals
     delete T;
     free(P);
 #ifdef VERBOSE
@@ -251,7 +253,7 @@ namespace Wrapper {
     else {
       cout << "Error: dimension >20 is not supported." << endl;
     }
-    // free(coreFlag2);
+    free(coreFlag2);
     return labels;
   }
 

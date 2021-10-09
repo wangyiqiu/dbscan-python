@@ -17,7 +17,10 @@ struct unionFind {
     parallel_for (0, n, [&](intT i) {hooks[i] = intMax();});
   }
 
-  void del() {free(parents);}
+  void del() {
+    free(parents);
+    free(hooks);
+  }
 
   inline intT find(intT i) {
     intT j = i;

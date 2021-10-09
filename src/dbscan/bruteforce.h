@@ -66,6 +66,7 @@ intT* clusterCoreBF(pointT* P, intT n, floatT epsilon, intT minPts, intT* coreFl
     });
   // for (intT i=0; i<n; ++i) cout << cluster[i] << " ";
   // cout << endl;
+  uf.del();
   return cluster;
 }
 
