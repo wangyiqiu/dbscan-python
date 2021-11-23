@@ -18,8 +18,8 @@ int main(int argc, char* argv[]) {
   int dim = readHeader(iFile);
   _seq<double> PIn = readDoubleFromFile(iFile, dim);
 
-  bool* coreFlag = (bool*) malloc(sizeof(bool) * PIn.n / dim);
-  int* cluster = (int*) malloc(sizeof(bool) * PIn.n / dim);
+  bool* coreFlag = new bool[PIn.n / dim];
+  int* cluster = new int[PIn.n / dim];
   double* data = PIn.A;
 
   auto clusterer = Wrapper::Caller(data, dim, PIn.n / dim);
@@ -28,5 +28,9 @@ int main(int argc, char* argv[]) {
   if (oFile != NULL) {
     writeArrayToFile("cluster-id", cluster, PIn.n / dim, oFile);
   }
+
+  PIn.del();
+  delete[] coreFlag;
+  delete[] cluster;
   return 0;
 }
