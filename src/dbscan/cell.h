@@ -21,6 +21,8 @@
 
 #pragma once
 
+#include "shared.h"
+#include "point.h"
 #include "grid.h"
 #include "pbbs/ndHash.h"
 
