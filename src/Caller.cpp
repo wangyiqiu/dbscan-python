@@ -44,7 +44,7 @@ namespace Wrapper {
     pointT pMin = pMinParallel(PRead, n);
 
     auto P = newA(pointT, n);
-    parallel_for(0, n, [&](intT i){P[i] = PRead[i];});
+    // parallel_for(0, n, [&](intT i){P[i] = PRead[i];});
     auto G = new gridT(n+1, pMin, epsilon/sqrt(dim));
     auto I = newA(intT, n);
     G->insertParallel(PRead, P, n, I);

@@ -21,8 +21,6 @@
 
 #pragma once
 
-#include "kBuffer.h"
-
 template<int dim, class objT>
 class kdNode {
   typedef double floatT;
@@ -39,8 +37,6 @@ class kdNode {
   nodeT* left;
   nodeT* right;
   nodeT* sib;
-
-  intT id;//optional
 
   inline void boundingBoxSerial() {
     pMin = pointT(items[0]->coordinate());
@@ -175,9 +171,6 @@ class kdNode {
     }
   }
 
-  //cilk_spawn requires function
-  // void buildNode(nodeT *space, objT** itemss, intT nn, nodeT *spacee, objT** scratchh, intT* flagss, intT leafSize) {
-  //   space[0] = nodeT(itemss, nn, spacee, scratchh, flagss, leafSize);}
   void constructParallel(nodeT *space, objT** scratch, intT* flags, intT leafSize) {
     boundingBoxParallel();
     sib = NULL;
@@ -202,21 +195,12 @@ class kdNode {
       if (median == 0 || median == n) {median = (n/2.0);}
       par_do([&](){space[0] = nodeT(items, median, space+1, scratch, flags, leafSize);},
 	     [&](){space[2*median-1] = nodeT(items+median, n-median, space+2*median, scratch+median, flags+median, leafSize);});
-      // cilk_spawn buildNode(&space[0], items, median, space+1, scratch, flags, leafSize);
-      // buildNode(&space[2*median-1], items+median, n-median, space+2*median, scratch+median, flags+median, leafSize);
-      // cilk_sync;
       left = space;
       right = space+2*median-1;
       left->sib = right;
       right->sib = left;
     }
   }
-
-  typedef struct KBuffer::KBuffer<objT*> kbufT;
-  typedef struct KBuffer::KElem<objT*> kelemT;
-  void knnRange(objT* q, floatT radius, kbufT *out);
-  void knnRangeHelper(objT* q, pointT qMin, pointT qMax, floatT radius, kbufT *out);
-  void knnHelper(objT* q, intT k, kbufT *out);
 
   public:
   inline nodeT* L() {return left;}
@@ -232,18 +216,10 @@ class kdNode {
   inline floatT getMax(intT i) {return pMax[i];}
   inline floatT getMin(intT i) {return pMin[i];}
 
-  inline intT getId() {return id;}
-  inline void setId(intT idd) {id = idd;}
-  inline void resetId() {id = -1;}
-  inline bool hasId() {return id >= 0;}
-
-  void kNN(objT* q, intT k, kbufT* out);
-  objT** kNN(objT* q, intT k, objT** R=NULL);
-
-  kdNode(objT** itemss, intT nn, nodeT *space, objT** scratch, intT* flags, intT leafSize=16): items(itemss), n(nn), id(-1) {
+  kdNode(objT** itemss, intT nn, nodeT *space, objT** scratch, intT* flags, intT leafSize=16): items(itemss), n(nn) {
     if (n>2000) constructParallel(space, scratch, flags, leafSize);
     else constructSerial(space, leafSize);}
-  kdNode(objT** itemss, intT nn, nodeT *space, intT leafSize=16): items(itemss), n(nn), id(-1) {
+  kdNode(objT** itemss, intT nn, nodeT *space, intT leafSize=16): items(itemss), n(nn) {
     constructSerial(space, leafSize);}
 
   void setEmpty() {n=-1;}
@@ -327,40 +303,17 @@ class kdNode {
 	if (items[i]->getCoordObj()->dist(queryPt) <= r)
 	  accum->push_back(items[i]);
       }
-      // for(intT i=0; i<n; ++i) accum->push_back(items[i]);
     } else if (relation == boxOverlap) {
       if (isLeaf()) {
         for(intT i=0; i<n; ++i) {
 	  if (items[i]->getCoordObj()->dist(queryPt) <= r &&
 	      itemInBox(pMin1, pMax1, items[i])) accum->push_back(items[i]);
-          // if (itemInBox(pMin1, pMax1, items[i])) accum->push_back(items[i]);
 	}
       } else {
         left->rangeNeighbor(queryPt, r, pMin1, pMax1, accum);
         right->rangeNeighbor(queryPt, r, pMin1, pMax1, accum);}
     }
   }
-
-  // //Deprecate
-  // template<class func>
-  // void rangeNeighbor2(pointT pMin1, pointT pMax1, floatT r, func* f) {
-  //   if (f->isComplete()) return;
-  //   int relation = boxCompare(pMin1, pMax1, pMin, pMax);
-  //   if (relation == boxInclude) {
-  //     for(intT i=0; i<n; ++i) {
-  //       if (f->checkComplete(items[i])) break;
-  //     }
-  //   } else if (relation == boxOverlap) {
-  //     if (isLeaf()) {
-  //       for(intT i=0; i<n; ++i) {
-  //         if (itemInBox(pMin1, pMax1, items[i])) {
-  //           if (f->checkComplete(items[i])) break;}
-  //       }
-  //     } else {
-  //       left->rangeNeighbor2(pMin1, pMax1, r, f);
-  //       right->rangeNeighbor2(pMin1, pMax1, r, f);}
-  //   }
-  // }
 
   template<class func, class func2>
   void rangeNeighbor(pointT queryPt, floatT r, pointT pMin1, pointT pMax1, func term, func2 doTerm) {
@@ -370,15 +323,12 @@ class kdNode {
       for(intT i=0; i<n; ++i) {
 	if (items[i]->getCoordObj()->dist(queryPt) <= r &&
 	    doTerm(items[i])) break;
-        // if (doTerm(items[i])) break;
       }
     } else if (relation == boxOverlap) {
       if (isLeaf()) {
         for(intT i=0; i<n; ++i) {
 	  if (items[i]->getCoordObj()->dist(queryPt) <= r &&
 		doTerm(items[i])) break;
-          // if (itemInBox(pMin1, pMax1, items[i])) {
-          //   if (doTerm(items[i])) break;}
         }
       } else {
         left->rangeNeighbor(queryPt, r, pMin1, pMax1, term, doTerm);
