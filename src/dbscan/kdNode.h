@@ -320,58 +320,69 @@ class kdNode {
 
   //vecT need to be vector<objT*>
   template<class vecT>
-  void rangeNeighbor(pointT pMin1, pointT pMax1, floatT r, vecT* accum) {
-    int relation = boxCompare(pMin1, pMax1, pMin, pMax);
-    if (relation == boxInclude) {
-      for(intT i=0; i<n; ++i) accum->push_back(items[i]);
-    } else if (relation == boxOverlap) {
-      if (isLeaf()) {
-        for(intT i=0; i<n; ++i) {
-          if (itemInBox(pMin1, pMax1, items[i])) accum->push_back(items[i]);}
-      } else {
-        left->rangeNeighbor(pMin1, pMax1, r, accum);
-        right->rangeNeighbor(pMin1, pMax1, r, accum);}
-    }
-  }
-
-  //Deprecate
-  template<class func>
-  void rangeNeighbor2(pointT pMin1, pointT pMax1, floatT r, func* f) {
-    if (f->isComplete()) return;
+  void rangeNeighbor(pointT queryPt, floatT r, pointT pMin1, pointT pMax1, vecT* accum) {
     int relation = boxCompare(pMin1, pMax1, pMin, pMax);
     if (relation == boxInclude) {
       for(intT i=0; i<n; ++i) {
-        if (f->checkComplete(items[i])) break;
+	if (items[i]->getCoordObj()->dist(queryPt) <= r)
+	  accum->push_back(items[i]);
       }
+      // for(intT i=0; i<n; ++i) accum->push_back(items[i]);
     } else if (relation == boxOverlap) {
       if (isLeaf()) {
         for(intT i=0; i<n; ++i) {
-          if (itemInBox(pMin1, pMax1, items[i])) {
-            if (f->checkComplete(items[i])) break;}
-        }
+	  if (items[i]->getCoordObj()->dist(queryPt) <= r &&
+	      itemInBox(pMin1, pMax1, items[i])) accum->push_back(items[i]);
+          // if (itemInBox(pMin1, pMax1, items[i])) accum->push_back(items[i]);
+	}
       } else {
-        left->rangeNeighbor2(pMin1, pMax1, r, f);
-        right->rangeNeighbor2(pMin1, pMax1, r, f);}
+        left->rangeNeighbor(queryPt, r, pMin1, pMax1, accum);
+        right->rangeNeighbor(queryPt, r, pMin1, pMax1, accum);}
     }
   }
 
+  // //Deprecate
+  // template<class func>
+  // void rangeNeighbor2(pointT pMin1, pointT pMax1, floatT r, func* f) {
+  //   if (f->isComplete()) return;
+  //   int relation = boxCompare(pMin1, pMax1, pMin, pMax);
+  //   if (relation == boxInclude) {
+  //     for(intT i=0; i<n; ++i) {
+  //       if (f->checkComplete(items[i])) break;
+  //     }
+  //   } else if (relation == boxOverlap) {
+  //     if (isLeaf()) {
+  //       for(intT i=0; i<n; ++i) {
+  //         if (itemInBox(pMin1, pMax1, items[i])) {
+  //           if (f->checkComplete(items[i])) break;}
+  //       }
+  //     } else {
+  //       left->rangeNeighbor2(pMin1, pMax1, r, f);
+  //       right->rangeNeighbor2(pMin1, pMax1, r, f);}
+  //   }
+  // }
+
   template<class func, class func2>
-  void rangeNeighbor(pointT pMin1, pointT pMax1, floatT r, func term, func2 doTerm) {
+  void rangeNeighbor(pointT queryPt, floatT r, pointT pMin1, pointT pMax1, func term, func2 doTerm) {
     if (term()) return;
     int relation = boxCompare(pMin1, pMax1, pMin, pMax);
     if (relation == boxInclude) {
       for(intT i=0; i<n; ++i) {
-        if (doTerm(items[i])) break;
+	if (items[i]->getCoordObj()->dist(queryPt) <= r &&
+	    doTerm(items[i])) break;
+        // if (doTerm(items[i])) break;
       }
     } else if (relation == boxOverlap) {
       if (isLeaf()) {
         for(intT i=0; i<n; ++i) {
-          if (itemInBox(pMin1, pMax1, items[i])) {
-            if (doTerm(items[i])) break;}
+	  if (items[i]->getCoordObj()->dist(queryPt) <= r &&
+		doTerm(items[i])) break;
+          // if (itemInBox(pMin1, pMax1, items[i])) {
+          //   if (doTerm(items[i])) break;}
         }
       } else {
-        left->rangeNeighbor(pMin1, pMax1, r, term, doTerm);
-        right->rangeNeighbor(pMin1, pMax1, r, term, doTerm);}
+        left->rangeNeighbor(queryPt, r, pMin1, pMax1, term, doTerm);
+        right->rangeNeighbor(queryPt, r, pMin1, pMax1, term, doTerm);}
     }
   }
 

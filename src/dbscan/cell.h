@@ -23,7 +23,6 @@
 
 #include "shared.h"
 #include "point.h"
-#include "grid.h"
 #include "pbbs/ndHash.h"
 
 #ifdef USEJEMALLOC
@@ -78,8 +77,9 @@ struct cell {
   inline void init() {
     numPoints = 0;}
 
-  objT* getItem() {return P;}
-  objT* getItem(intT i) {return &P[i];}
+  inline objT* getItem() {return P;}
+  inline objT* getItem(intT i) {return &P[i];}
+  inline objT* getCoordObj() {return &coordP;}
 
   /**
   *   Computes the coordinate of the cell base on P, and assign to coordP.

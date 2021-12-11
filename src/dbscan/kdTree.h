@@ -74,58 +74,60 @@ class kdTree {
     free(items);
     free(root);}
 
-  vector<objT*>* rangeNeighbor(objT* query, floatT r) {
-    vector<objT*>* accum = new vector<objT*>();
-    pointT pMin1 = pointT();
-    pointT pMax1 = pointT();
-    floatT* center = query->coordinate();
-    for (int i=0; i<dim; ++i) {
-      pMin1.updateX(i, center[i]-r);
-      pMax1.updateX(i, center[i]+r);}
-    root->rangeNeighbor(pMin1, pMax1, r, accum);
-    return accum;
-  }
+  // vector<objT*>* rangeNeighbor(objT* query, floatT r) {
+  //   vector<objT*>* accum = new vector<objT*>();
+  //   pointT pMin1 = pointT();
+  //   pointT pMax1 = pointT();
+  //   floatT* center = query->coordinate();
+  //   for (int i=0; i<dim; ++i) {
+  //     pMin1.updateX(i, center[i]-r);
+  //     pMax1.updateX(i, center[i]+r);}
+  //   root->rangeNeighbor(pMin1, pMax1, r, accum);
+  //   return accum;
+  // }
 
-  //Deprecate
-  template<class func>
-  void rangeNeighbor(objT* query, floatT r, func* f) {
-    pointT pMin1 = pointT();
-    pointT pMax1 = pointT();
-    floatT* center = query->coordinate();
-    for (int i=0; i<dim; ++i) {
-      pMin1.updateX(i, center[i]-r);
-      pMax1.updateX(i, center[i]+r);}
-    root->rangeNeighbor2(pMin1, pMax1, r, f);
-  }
+  // //Deprecate
+  // template<class func>
+  // void rangeNeighbor(objT* query, floatT r, func* f) {
+  //   pointT pMin1 = pointT();
+  //   pointT pMax1 = pointT();
+  //   floatT* center = query->coordinate();
+  //   for (int i=0; i<dim; ++i) {
+  //     pMin1.updateX(i, center[i]-r);
+  //     pMax1.updateX(i, center[i]+r);}
+  //   root->rangeNeighbor2(pMin1, pMax1, r, f);
+  // }
 
-  template<class func, class func2>
-  void rangeNeighbor(objT* query, floatT r, func term, func2 doTerm) {
-    pointT pMin1 = pointT();
-    pointT pMax1 = pointT();
-    floatT* center = query->coordinate();
-    for (int i=0; i<dim; ++i) {
-      pMin1.updateX(i, center[i]-r);
-      pMax1.updateX(i, center[i]+r);}
-    root->rangeNeighbor(pMin1, pMax1, r, term, doTerm);
-  }
+  // template<class func, class func2>
+  // void rangeNeighbor(objT* query, floatT r, func term, func2 doTerm) {
+  //   pointT pMin1 = pointT();
+  //   pointT pMax1 = pointT();
+  //   floatT* center = query->coordinate();
+  //   for (int i=0; i<dim; ++i) {
+  //     pMin1.updateX(i, center[i]-r);
+  //     pMax1.updateX(i, center[i]+r);}
+  //   root->rangeNeighbor(pMin1, pMax1, r, term, doTerm);
+  // }
 
   template<class vecT, class func, class func2>
   vecT* rangeNeighbor(objT* query, floatT r, func term, func2 doTerm, bool cache=false, vecT* accum=NULL) {
     pointT pMin1 = pointT();
     pointT pMax1 = pointT();
+    pointT queryPt = pointT();
     floatT* center = query->coordinate();
     for (int i=0; i<dim; ++i) {
+      queryPt.updateX(i, center[i]);
       pMin1.updateX(i, center[i]-r);
       pMax1.updateX(i, center[i]+r);}
     if(cache) {
       if(!accum) accum = new vecT();
-      root->rangeNeighbor(pMin1, pMax1, r, accum);
+      root->rangeNeighbor(queryPt, r, pMin1, pMax1, accum);
       for (intT i=0; i<accum->size(); ++i) {
         if(doTerm(accum->at(i))) break;
       }
       return accum;
     } else {
-      root->rangeNeighbor(pMin1, pMax1, r, term, doTerm);
+      root->rangeNeighbor(queryPt, r, pMin1, pMax1, term, doTerm);
       return NULL;
     }
   }
