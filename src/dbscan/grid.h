@@ -148,7 +148,8 @@ struct grid {
         if(fWrap(accum->at(i))) break;
       }
     } else {
-      nbrCache[bait-cells] = tree->rangeNeighbor(bait, r*2*1.0000001, fStop, fWrap, true, nbrCache[bait-cells]);
+      floatT hop = sqrt(dim + 3) * 1.0000001;
+      nbrCache[bait-cells] = tree->rangeNeighbor(bait, r * hop, fStop, fWrap, true, nbrCache[bait-cells]);
     }
   }
 
@@ -166,7 +167,8 @@ struct grid {
         if(fWrap(accum->at(i))) break;
       }
     } else {
-      nbrCache[bait-cells] = tree->rangeNeighbor(bait, r*2*1.0000001, fStop, fWrap, true, nbrCache[bait-cells]);
+      floatT hop = sqrt(dim + 3) * 1.0000001;
+      nbrCache[bait-cells] = tree->rangeNeighbor(bait, r * hop, fStop, fWrap, true, nbrCache[bait-cells]);
     }
   }
 
