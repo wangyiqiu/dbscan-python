@@ -184,7 +184,7 @@ struct grid {
     auto ipLess = [&] (intT a, intT b) {
                    return pointGridCmp<dim, objT, geoPointT>(P[a], P[b], pMin, r);};
     sampleSort(I, nn, ipLess);
-    parallel_for(0, nn, [&](intT i){PP[i] = P[I[i]];});
+    parallel_for(0, nn, [&](intT i){PP[I[i]] = P[i];});
 
     flag[0] = 1;
     parallel_for(1, nn, [&](intT i) {
