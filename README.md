@@ -4,7 +4,7 @@ This repository hosts fast parallel DBSCAN clustering code for low dimensional E
 
 Our software on 1 thread is on par with all serial state-of-the-art DBSCAN packages, and provides additional speedup via multi-threading. Below, we show a simple benchmark comparing our code with the DBSCAN implementation of Sklearn, tested on a 4-core computer, and a visualization of the clustering result. The time saved will be more significant on a larger data set and a machine with more cores.
 
-Currently the software supports data sets with dimensionality 2 - 20.
+Data sets with dimensionality 2 - 20 are supported by default, which can be modified by modifying ``Caller::computeDBSCAN`` in the [source](https://github.com/wangyiqiu/dbscan-python/blob/master/src/Caller.cpp).
 
 <p float="left">
 <img src="https://github.com/wangyiqiu/dbscan-python/blob/master/compare.png" alt="timing" width="300"/>
