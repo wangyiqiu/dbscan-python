@@ -1,6 +1,6 @@
 # Overview
 
-This repository hosts fast parallel DBSCAN clustering code for lower dimensional Euclidean space. The code automatically uses all available POSIX threads to speedup DBSCAN clustering. It stems from a paper presented in SIGMOD'20: [Theoretically Efficient and Practical Parallel DBSCAN](https://arxiv.org/abs/1912.06255).
+This repository hosts fast parallel DBSCAN clustering code for low dimensional Euclidean space. The code automatically uses the available threads on a parallel shared-memory machine to speedup DBSCAN clustering. It stems from a paper presented in SIGMOD'20: [Theoretically Efficient and Practical Parallel DBSCAN](https://dl.acm.org/doi/10.1145/3318464.3380582).
 
 Our software on 1 thread is on par with all serial state-of-the-art DBSCAN packages, and provides additional speedup via multi-threading. Below, we show a simple benchmark comparing our code with the DBSCAN implementation of Sklearn, tested on a 4-core computer, and a visualization of the clustering result. The time saved will be more significant on a larger data set and a machine with more cores.
 
@@ -18,23 +18,25 @@ Currently the software supports data sets with dimensionality 2 - 20.
 Compile and run the program:
 
 ```
-cd executable
 mkdir build
-cd build
 cmake ..
+cd executable
 make -j # this will take a while
 ./dbscan -eps 0.1 -minpts 10 -o clusters.txt <data-file>
 ```
 
-The `<data-file>` can be any CSV-like point data with or without header, see an example [here](https://github.com/wangyiqiu/hdbscan/blob/main/example-data.csv). The cluster output `clusters.txt` will contain a cluster ID on each line (other than the first-line header), giving a cluster assignment in the same ordering as the input file. A noise point will have a cluster ID of `-1`.
+The `<data-file>` can be any CSV-like point data file, where each line contains a data point -- see an example [here](https://github.com/wangyiqiu/hdbscan/blob/main/example-data.csv). The data file can be either with or without header. The cluster output `clusters.txt` will contain a cluster ID on each line (other than the first-line header), giving a cluster assignment in the same ordering as the input file. A noise point will have a cluster ID of `-1`.
 
 ## Option 2: Use the Python binding (experimental)
 
-We are developing a Python wrapper, currently using Cython. Right now it is still experimental, as it is only supported on ***Ubuntu on x86_64 with Python 3.8+*** (it is tested to work directly on a fresh copy of Ubuntu 20.04). There are two ways to install it:
-* Install it using PyPI: ``pip3 install --user dbscan`` (the latest verion is 0.0.9)
-* ***OR*** Compile it yourself: First install dependencies ``pip3 install -r src/requirements.txt`` and ``sudo apt install libpython3-dev``. Navigate to ``src/``, and run the ''make'' script ``./make.sh``, The compilation will take a few minutes, and generate a ''.so'' library containing the ''DBSCAN'' module.
+We are developing a Python wrapper using Cython. Currently it is still experimental, as it is only tested to work on a fresh copy of Ubuntu 20.04 (x86_64 with Python 3.8+). There are two ways to install it:
 
-An example is provided in '`src/example.py`'. If the dependencies above are installed, simply run 'python3 src/example.py' to reproduce the plots above.
+* Compile it yourself: First install dependencies ``pip3 install -r src/requirements.txt`` and ``sudo apt install libpython3-dev``. Navigate to ``src/``, and run the ``make`` script ``./make.sh``, The compilation will take a few minutes, and generate a ``.so`` library containing the ``DBSCAN`` module.
+* ***OR*** Install it using PyPI: ``pip3 install --user dbscan`` (the latest verion is 0.0.9)
+
+An example for using the Python module is provided in ``src/example.py``. If the dependencies above are installed, simply run ``python3 example.py`` from ``src/`` to reproduce the plots above.
+
+While we plan to support more Python versions and environments, we welcome any contributions that achieve these.
 
 ### Python API
 
@@ -98,10 +100,6 @@ for k, col in zip(unique_labels, colors):
 plt.title('Estimated number of clusters: %d' % n_clusters_)
 plt.show()
 ```
-
-## Help and Support
-
-Please feel free to contact the developers or the paper authors if you encounter any problems, we are happy to patch/fix the program.
 
 ## Citation
 
