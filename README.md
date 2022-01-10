@@ -4,7 +4,7 @@ This repository hosts fast parallel DBSCAN clustering code for low dimensional E
 
 Our software on 1 thread is on par with all serial state-of-the-art DBSCAN packages, and provides additional speedup via multi-threading. Below, we show a simple benchmark comparing our code with the DBSCAN implementation of Sklearn, tested on a 4-core computer, and a visualization of the clustering result. The time saved will be more significant on a larger data set and a machine with more cores.
 
-Data sets with dimensionality 2 - 20 are supported by default, which can be modified by modifying ``Caller::computeDBSCAN`` in the [source](https://github.com/wangyiqiu/dbscan-python/blob/master/src/Caller.cpp).
+Data sets with dimensionality 2 - 20 are supported by default, which can be modified by modifying ``Caller::computeDBSCAN`` in the [source code](https://github.com/wangyiqiu/dbscan-python/blob/master/src/Caller.cpp).
 
 <p float="left">
 <img src="https://github.com/wangyiqiu/dbscan-python/blob/master/compare.png" alt="timing" width="300"/>
@@ -19,6 +19,7 @@ Compile and run the program:
 
 ```
 mkdir build
+cd build
 cmake ..
 cd executable
 make -j # this will take a while
@@ -31,12 +32,12 @@ The `<data-file>` can be any CSV-like point data file, where each line contains 
 
 We are developing a Python wrapper using Cython. Currently it is still experimental, as it is only tested to work on a fresh copy of Ubuntu 20.04 (x86_64 with Python 3.8+). There are two ways to install it:
 
-* Compile it yourself: First install dependencies ``pip3 install -r src/requirements.txt`` and ``sudo apt install libpython3-dev``. Navigate to ``src/``, and run the ``make`` script ``./make.sh``, The compilation will take a few minutes, and generate a ``.so`` library containing the ``DBSCAN`` module.
+* Compile it yourself: First install dependencies ``pip3 install -r src/requirements.txt`` and ``sudo apt install libpython3-dev``. Navigate to ``src/``, and run the Make script ``./make.sh``, The compilation will take a few minutes, and generate a ``.so`` library containing the ``DBSCAN`` module.
 * ***OR*** Install it using PyPI: ``pip3 install --user dbscan`` (the latest verion is 0.0.9)
 
 An example for using the Python module is provided in ``src/example.py``. If the dependencies above are installed, simply run ``python3 example.py`` from ``src/`` to reproduce the plots above.
 
-While we plan to support more Python versions and environments, we welcome any contributions that achieve these.
+We plan to support more Python versions and environments, and we welcome any contributions that achieve these.
 
 ### Python API
 
@@ -56,7 +57,7 @@ labels, core_samples_mask = DBSCAN(X, eps=0.3, min_samples=10)
 * ``labels``: A length ``n`` Numpy array (``dtype=np.int32``) containing cluster IDs of the data points, in the same ordering as the input data. Noise points are given a pseudo-ID of ``-1``.
 * ``core_samples_mask``: A length ``n`` Numpy array (``dtype=np.bool``) masking the core points, in the same ordering as the input data.
 
-We provide a complete example below that generates a toy data set, computes the DBSCAN clustering, and visualizes the result as shown in the plot above. Before running the example, first install packages for generating the data set and visualizing the result ``pip3 install --user sklearn matplotlib``.
+We provide a complete example below that generates a toy data set, computes the DBSCAN clustering, and visualizes the result as shown in the plot above. Note that before running the example, the dependencies in ``src/requirements.txt`` need to be installed first.
 
 ```
 import numpy as np
