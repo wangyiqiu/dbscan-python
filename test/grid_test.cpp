@@ -5,6 +5,36 @@
 #include <iostream>
 #include <memory.h>
 
+TEST(testGrid, construction) {
+  static const int dim = 2;
+  using pointT = point<dim>;
+  using gridT = grid<dim, pointT>;
+  typedef cell<dim, pointT> cellT;
+
+  int n = 9;
+
+  std::unique_ptr<double[]> data(new double[n * dim]);
+
+  pointT* PRead = (pointT*) data.get();
+
+  data[0] = 0.5; data[1] = 3.5;
+  data[2] = 0; data[3] = 0;
+  data[4] = 0.5; data[5] = 2.5;
+  data[6] = 1.5; data[7] = 3.5;
+  data[8] = 1.5; data[9] = 0.5;
+  data[10] = 2.5; data[11] = 1.5;
+  data[12] = 2.5; data[13] = 0.5;
+  data[14] = 2.5; data[15] = 0.5;
+  data[16] = 0.5; data[17] = 3.5;
+
+  std::unique_ptr<gridT> G(new gridT(n+1, PRead[0], 1));
+  std::unique_ptr<intT[]> I(new intT[n]);
+  std::unique_ptr<pointT[]> P(new pointT[n]);
+  G->insertParallel(PRead, P.get(), n, I.get());
+
+  EXPECT_EQ(G->numCell(), 7);
+}
+
 TEST(testGrid, basic) {
   static const int dim = 2;
   using pointT = point<dim>;

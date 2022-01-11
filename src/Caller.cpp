@@ -211,10 +211,10 @@ namespace Wrapper {
 
     //restoring order
     parallel_for(0, n, [&](intT i){
-			 cluster[i] = cluster2[I[i]];
+			 cluster[I[i]] = cluster2[i];
 		       });
     parallel_for(0, n, [&](intT i){
-			 coreFlagOut[i] = coreFlag[I[i]];
+			 coreFlagOut[I[i]] = coreFlag[i];
 		       });
 
     free(I);
