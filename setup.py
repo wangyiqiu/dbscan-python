@@ -1,5 +1,7 @@
 import setuptools
 from setuptools.extension import Extension
+from Cython.Build import cythonize
+import numpy
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
@@ -15,9 +17,18 @@ setuptools.setup(
     keywords='cluster clustering density dbscan',
     url="https://github.com/wangyiqiu/dbscan-python",
     license='MIT',
-    packages=[''],#setuptools.find_packages(),
-    package_dir={'': '.'},
-    package_data={'': ['dbscan/DBSCAN.cpython-38-x86_64-linux-gnu.so']},
+    packages=setuptools.find_packages(where='src'),
+    package_dir={'': 'src'},
+    ext_modules=cythonize(
+        Extension(
+            "dbscan",
+            ["src/dbscan.pyx"],
+            language = 'c++',
+            extra_compile_args=["-O3", "-Isrc", "-std=c++17", "-pthread", "-g", "-O3", "-fPIC"],
+            language_level = "3",
+            include_dirs=[numpy.get_include()],
+        )
+    ),
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Science/Research',
@@ -30,4 +41,7 @@ setuptools.setup(
         "Operating System :: POSIX :: Linux",
     ],
     python_requires='>=3.8',
+    install_requires=[
+       'numpy'
+    ],
 )
