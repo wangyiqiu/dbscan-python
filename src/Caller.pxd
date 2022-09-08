@@ -4,8 +4,5 @@ cdef extern from "Caller.cpp":
     pass
 
 # Declare the class with cdef
-cdef extern from "Caller.h" namespace "Wrapper":
-    cdef cppclass Caller:
-        Caller() except +
-        Caller(double *, int, int) except +
-        int* computeDBSCAN(double, int, bool *, int *)
+cdef extern from "Caller.h":
+    int* DBSCAN(double *, int, int, double, int, bool *, int *)

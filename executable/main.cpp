@@ -22,8 +22,7 @@ int main(int argc, char* argv[]) {
   int* cluster = new int[PIn.n / dim];
   double* data = PIn.A;
 
-  auto clusterer = Wrapper::Caller(data, dim, PIn.n / dim);
-  clusterer.computeDBSCAN(p_epsilon, p_minpts, coreFlag, cluster);
+  DBSCAN(data, dim, PIn.n / dim, p_epsilon, p_minpts, coreFlag, cluster);
 
   if (oFile != NULL) {
     writeArrayToFile("cluster-id", cluster, PIn.n / dim, oFile);

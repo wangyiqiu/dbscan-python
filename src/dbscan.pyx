@@ -1,8 +1,9 @@
 # distutils: language = c++
+# cython: language_level = 3
 
 from libc.stdlib cimport malloc, free
 from libcpp cimport bool
-from Caller cimport Caller
+from Caller cimport DBSCAN as DBSCAN_cpp
 import numpy as np
 
 def DBSCAN(X, double eps=0.5, int min_samples=5):
@@ -21,17 +22,12 @@ def DBSCAN(X, double eps=0.5, int min_samples=5):
 
     cdef double [:,:] X_view = X
 
-    my_instance = new Caller(&X_view[0,0], dim, n)
-
     core_samples = np.empty(n, dtype=np.bool_)
     cdef bool [:] core_samples_view = core_samples
 
     labels = np.empty(n, dtype=np.int32)
     cdef int [:] labels_view = labels
 
-    try:
-        my_instance.computeDBSCAN(eps, min_samples, &core_samples_view[0], &labels_view[0])
-    finally:
-        del my_instance
+    DBSCAN_cpp(&X_view[0,0], dim, n, eps, min_samples, &core_samples_view[0], &labels_view[0])
 
     return labels, core_samples
