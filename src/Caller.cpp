@@ -1,11 +1,10 @@
-#include <iostream>
 #include "Caller.h"
 
 #include "dbscan/algo.h"
 #include "dbscan/pbbs/parallel.h"
 #include "dbscan/pbbs/utils.h"
 
-intT* DBSCAN(floatT* PF, intT dim, intT n, double epsilon, intT minPts, bool* coreFlag, intT* labels) {
+int DBSCAN(floatT* PF, intT dim, intT n, double epsilon, intT minPts, bool* coreFlag, intT* labels) {
   auto coreFlag2 = newA(intT, n);
   if (dim == 2) {DBSCAN<2>(PF, n, epsilon, minPts, coreFlag, coreFlag2, labels);}
   else if (dim == 3) {DBSCAN<3>(PF, n, epsilon, minPts, coreFlag, coreFlag2, labels);}
@@ -27,9 +26,9 @@ intT* DBSCAN(floatT* PF, intT dim, intT n, double epsilon, intT minPts, bool* co
   else if (dim == 19) {DBSCAN<19>(PF, n, epsilon, minPts, coreFlag, coreFlag2, labels);}
   else if (dim == 20) {DBSCAN<20>(PF, n, epsilon, minPts, coreFlag, coreFlag2, labels);}
   else {
-    cout << "Error: dimension >20 is not supported." << endl;
+    return 1;
   }
   free(coreFlag2);
-  return labels;
+  return 0;
 }
 
