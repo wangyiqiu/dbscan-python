@@ -38,7 +38,7 @@ setuptools.setup(
         "dbscan",
         ["src/dbscanmodule.cpp", "src/Caller.cpp"],
         language = 'c++',
-        extra_compile_args=["-O3", "-Isrc", "-std=c++17", "-pthread", "-g", "-O3", "-fPIC"],
+        extra_compile_args=["-Isrc", "-std=c++17", "-pthread", "-g", "-O3", "-fPIC"],
         include_dirs=[numpy.get_include()],
         py_limited_api=True,
         define_macros=[('Py_LIMITED_API', '0x03020000'), ('NPY_NO_DEPRECATED_API', 'NPY_1_7_API_VERSION')]

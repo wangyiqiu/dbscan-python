@@ -39,8 +39,6 @@ An example for using the Python module is provided in ``src/example.py``. If the
 
 To create a wheel that is supported universally across many Python versions for your given OS, run ``python setup.py bdist_wheel --py-limited-api=cp{YOUR_PYTHON_VERSION}`` in an environment containing the oldest numpy version available for the version of Python that you are compiling for. For example, for Python 3.8, use numpy 1.17 to compile the wheel. Then, the wheel will work on all Python and numpy versions that are newer that that for your given OS. This is done automatically when installing via pip. When creating the wheel, it is best for the user to correctly specify the version of Python they are using as the argument. It is done automatically, but the process messes with the internals of the wheel package which may not be stable.
 
-We plan to support more Python versions and environments, and we welcome any contributions that achieve these.
-
 ### Python API
 
 ```

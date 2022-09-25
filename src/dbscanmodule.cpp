@@ -4,21 +4,31 @@
 
 static PyObject* DBSCAN(PyObject* self, PyObject* args, PyObject *kwargs)
 {
+    PyObject *Xobj;
     PyArrayObject *X = NULL;
     double eps = 0.5;
     int min_samples = 5;
 
     static char *kwlist[] = {"X", "eps", "min_samples", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!|di", kwlist,
-                                     &PyArray_Type, &X, &eps, &min_samples))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O|di", kwlist,
+                                     &Xobj, &eps, &min_samples))
     {
         return NULL;
     }
 
-    if (PyArray_NDIM(X) != 2) {
-        PyErr_SetString(PyExc_ValueError, "DBSCAN: invalid input data must be a 2D array");
-        return (PyObject *) NULL;
+    // Check the number of dimensions and that we actually recieved an np.ndarray
+    X = (PyArrayObject*)PyArray_FROMANY(
+        Xobj,
+        NPY_DOUBLE,
+        2,
+        2,
+        NPY_ARRAY_CARRAY_RO
+    );
+
+    if (X == NULL)
+    {
+        return NULL;
     }
 
     npy_intp *dims = PyArray_SHAPE(X);
@@ -26,24 +36,35 @@ static PyObject* DBSCAN(PyObject* self, PyObject* args, PyObject *kwargs)
     npy_intp n = dims[0];
     npy_intp dim = dims[1];
 
-    if (dim <= 1) {
+    if (dim <= 1)
+    {
         PyErr_SetString(PyExc_ValueError, "DBSCAN: invalid input data dimensionality (has to >1)");
-        return (PyObject *) NULL;
+        return NULL;
     }
 
-    if (dim > 20) {
+    if (dim > 20)
+    {
         PyErr_SetString(PyExc_ValueError, "DBSCAN: dimension >20 is not supported");
-        return (PyObject *) NULL;
+        return NULL;
     }
 
-    if (n > 100000000) {
+    if (n > 100000000)
+    {
         PyErr_WarnEx(PyExc_RuntimeWarning, "DBSCAN: large n, the program behavior might be undefined due to overflow", 1);
     }
 
     PyArrayObject* core_samples = (PyArrayObject*)PyArray_SimpleNew(1, &n, NPY_BOOL);
     PyArrayObject* labels = (PyArrayObject*)PyArray_SimpleNew(1, &n, NPY_INT);
 
-    DBSCAN((double*)PyArray_DATA(X), dim, n, eps, min_samples, (bool*)PyArray_DATA(core_samples), (int*)PyArray_DATA(labels));
+    DBSCAN(
+        (double*)PyArray_DATA(X),
+        dim,
+        n,
+        eps,
+        min_samples,
+        (bool*)PyArray_DATA(core_samples),
+        (int*)PyArray_DATA(labels)
+    );
 
     PyObject* ret = PyTuple_Pack(2, labels, core_samples);
     Py_IncRef(ret);

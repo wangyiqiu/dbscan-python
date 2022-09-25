@@ -20,7 +20,7 @@ if (False):
     core_samples_mask[db.core_sample_indices_] = True
     labels = db.labels_
 else:
-    from DBSCAN import DBSCAN
+    from dbscan import DBSCAN
     labels, core_samples_mask = DBSCAN(X, eps=0.3, min_samples=10)
 
 # #############################################################################
