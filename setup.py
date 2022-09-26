@@ -36,10 +36,11 @@ setuptools.setup(
     package_dir={'': 'src'},
     ext_modules=[Extension(
         "dbscan",
-        ["src/dbscanmodule.cpp", "src/Caller.cpp"],
+        ["src/dbscanmodule.cpp", "src/capi.cpp"],
         language = 'c++',
-        extra_compile_args=["-Isrc", "-std=c++17", "-pthread", "-g", "-O3", "-fPIC"],
-        include_dirs=[numpy.get_include()],
+        extra_compile_args=["-stdlib=libc++", "-std=c++17", "-pthread", "-g", "-O3", "-fPIC"],
+        extra_link_args=["-L/usr/local/opt/gcc@11/lib/gcc/11"],
+        include_dirs=[numpy.get_include(), 'include'],
         py_limited_api=True,
         define_macros=[('Py_LIMITED_API', '0x03020000'), ('NPY_NO_DEPRECATED_API', 'NPY_1_7_API_VERSION')]
     )],
@@ -58,4 +59,5 @@ setuptools.setup(
     install_requires=[
        f'numpy>={numpy.__version__},<2'
     ],
+    zip_safe=False,
 )

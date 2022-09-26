@@ -13,7 +13,7 @@
 // #define VERBOSE
 
 template<int dim>
-intT* DBSCAN(floatT* PF, intT n, double epsilon, intT minPts, bool* coreFlagOut, intT* coreFlag, intT* cluster) {
+int DBSCAN(intT n, floatT* PF, double epsilon, intT minPts, bool* coreFlagOut, intT* coreFlag, intT* cluster) {
   typedef point<dim> pointT;
   typedef grid<dim, pointT> gridT;
   typedef cell<dim, pointT> cellT;
@@ -213,6 +213,5 @@ intT* DBSCAN(floatT* PF, intT n, double epsilon, intT minPts, bool* coreFlagOut,
 #ifdef VERBOSE
   cout << "output-time = " << tt.stop() << endl;
 #endif
-  return cluster;
+  return 0;
 }
-

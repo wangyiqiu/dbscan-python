@@ -7,5 +7,5 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 set(CMAKE_CXX_FLAGS "-std=c++17 -pthread -O3 -fPIC")
 
-add_executable(dbscan main.cpp ../src/Caller.cpp)
+add_executable(dbscan main.cpp ../src/capi.cpp)
 target_include_directories(dbscan PRIVATE ../src/)

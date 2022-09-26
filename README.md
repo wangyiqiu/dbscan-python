@@ -4,7 +4,7 @@ This repository hosts fast parallel DBSCAN clustering code for low dimensional E
 
 Our software on 1 thread is on par with all serial state-of-the-art DBSCAN packages, and provides additional speedup via multi-threading. Below, we show a simple benchmark comparing our code with the DBSCAN implementation of Sklearn, tested on a 4-core computer, and a visualization of the clustering result. The time saved will be more significant on a larger data set and a machine with more cores.
 
-Data sets with dimensionality 2 - 20 are supported by default, which can be modified by modifying ``Caller::computeDBSCAN`` in the [source code](https://github.com/wangyiqiu/dbscan-python/blob/master/src/Caller.cpp).
+Data sets with dimensionality 2 - 20 are supported by default, which can be modified by modifying ``DBSCAN_MIN_DIMS`` and ``DBSCAN_MAX_DIMS`` in the [source code](https://github.com/wangyiqiu/dbscan-python/blob/master/include/dbscan/capi.h).
 
 <p float="left">
 <img src="https://github.com/wangyiqiu/dbscan-python/blob/master/compare.png" alt="timing" width="300"/>
@@ -37,7 +37,44 @@ There are two ways to install it:
 
 An example for using the Python module is provided in ``src/example.py``. If the dependencies above are installed, simply run ``python3 example.py`` from ``src/`` to reproduce the plots above.
 
-To create a wheel that is supported universally across many Python versions for your given OS, run ``python setup.py bdist_wheel --py-limited-api=cp{YOUR_PYTHON_VERSION}`` in an environment containing the oldest numpy version available for the version of Python that you are compiling for. For example, for Python 3.8, use numpy 1.17 to compile the wheel. Then, the wheel will work on all Python and numpy versions that are newer that that for your given OS. This is done automatically when installing via pip. When creating the wheel, it is best for the user to correctly specify the version of Python they are using as the argument. It is done automatically, but the process messes with the internals of the wheel package which may not be stable.
+To create a wheel that is supported universally across many Python versions for your given OS, run ``python setup.py bdist_wheel`` in an environment containing the oldest numpy version available for the version of Python that you are compiling for. For example, for Python 3.8, use numpy 1.17 to compile the wheel. Then, the wheel will work on all Python and numpy versions that are newer that that for your given OS. This is done automatically when installing via pip.
+
+## Option 3: Include directly in your own C++ program
+
+Create your own caller header and source file by instantiating the DBSCAN template function in "dbscan/algo.h".
+
+dbscan.h:
+```c++
+template<int dim>
+int DBSCAN(int n, double* PF, double epsilon, int minPts, bool* coreFlagOut, int* coreFlag, int* cluster);
+
+// equivalent to
+// int DBSCAN(intT n, floatT PF[n][dim], double epsilon, intT minPts, bool coreFlagOut[n], intT coreFlag[n], intT cluster[n])
+// if C++ syntax was a little more flexible
+
+template<>
+int DBSCAN<3>(int n, double* PF, double epsilon, int minPts, bool* coreFlagOut, int* coreFlag, int* cluster);
+```
+
+dbscan.cpp:
+```c++
+#include "dbscan/algo.h"
+#include "dbscan.h"
+```
+
+Calling the instantiated function:
+```c++
+int n = ...; // number of data points
+double data[n][3] = ...; // data points
+int labels[n]; // label ids get saved here
+bool core_samples[n]; // a flag determining whether or not the sample is a core sample is saved here
+{
+  int ignore[n];
+  DBSCAN<3>(n, (void*)data, 70, 100, core_samples, ignore, labels);
+}
+```
+
+Doing this will only compile the function for the number of dimensions that you want, which saves on compilation time.
 
 ### Python API
 
