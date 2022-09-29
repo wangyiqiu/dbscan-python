@@ -37,3 +37,5 @@
 # Build files
 build/
 dbscan/build/
+src/dbscan.py.cpp
+.DS_Store

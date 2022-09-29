@@ -1,8 +1,9 @@
+#define DBSCAN_VERSION "0.0.9"
+
 #include "Python.h"
 #include "numpy/arrayobject.h"
 #include "dbscan/capi.h"
 
-#define STR(x) #x
 
 static PyObject* DBSCAN_py(PyObject* self, PyObject* args, PyObject *kwargs)
 {
@@ -40,13 +41,13 @@ static PyObject* DBSCAN_py(PyObject* self, PyObject* args, PyObject *kwargs)
 
     if (dim < DBSCAN_MIN_DIMS)
     {
-        PyErr_SetString(PyExc_ValueError, "DBSCAN: invalid input data dimensionality (has to >=" STR(DBSCAN_MIN_DIMS) ")");
+        PyErr_SetString(PyExc_ValueError, "DBSCAN: invalid input data dimensionality (has to >=" Py_STRINGIFY(DBSCAN_MIN_DIMS) ")");
         return NULL;
     }
 
     if (dim > DBSCAN_MAX_DIMS)
     {
-        PyErr_SetString(PyExc_ValueError, "DBSCAN: dimension >" STR(DBSCAN_MAX_DIMS) " is not supported");
+        PyErr_SetString(PyExc_ValueError, "DBSCAN: dimension >" Py_STRINGIFY(DBSCAN_MAX_DIMS) " is not supported");
         return NULL;
     }
 
@@ -68,9 +69,7 @@ static PyObject* DBSCAN_py(PyObject* self, PyObject* args, PyObject *kwargs)
         (int*)PyArray_DATA(labels)
     );
 
-    PyObject* ret = PyTuple_Pack(2, labels, core_samples);
-    Py_IncRef(ret);
-    return ret;
+    return PyTuple_Pack(2, labels, core_samples);
 }
 
 PyDoc_STRVAR(doc_DBSCAN,
@@ -105,22 +104,21 @@ static struct PyMethodDef methods[] = {
     {NULL, NULL, 0, NULL}
 };
 
-typedef struct {
-    PyObject *DBSCAN;
-} dbscanModuleState;
-
 static struct PyModuleDef dbscanModule =
 {
     PyModuleDef_HEAD_INIT,
-    "dbscan",
+    "_dbscan",
     "",
-    sizeof(dbscanModuleState),
+    0,
     methods
 };
 
 PyMODINIT_FUNC
-PyInit_dbscan (void)
+PyInit__dbscan(void)
 {
     import_array();
-    return PyModule_Create(&dbscanModule);
+    PyObject *module = PyModule_Create(&dbscanModule);
+    PyModule_AddStringConstant(module, "__version__", DBSCAN_VERSION);
+
+    return module;
 }

@@ -76,6 +76,13 @@ bool core_samples[n]; // a flag determining whether or not the sample is a core 
 
 Doing this will only compile the function for the number of dimensions that you want, which saves on compilation time.
 
+You can also include the "dbscan/capi.h" and define your own ``DBSCAN_MIN_DIMS`` and ``DBSCAN_MAX_DIMS`` macros the same way the Python extension uses it. The function exported has the following signature.
+```c++
+extern "C" int DBSCAN(int dim, int n, double* PF, double epsilon, int minPts, bool* coreFlag, int* cluster);
+```
+
+Right now, the only two files that are guaranteed to remain in the C/C++ API are "dbscan/algo.h" and "dbscan/capi.h" and the functions named DBSCAN within.
+
 ### Python API
 
 ```

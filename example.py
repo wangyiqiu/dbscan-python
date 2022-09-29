@@ -13,15 +13,16 @@ X = StandardScaler().fit_transform(X)
 # #############################################################################
 # Compute DBSCAN
 
-if (False):
-    from sklearn.cluster import DBSCAN
-    db = DBSCAN(eps=0.3, min_samples=10).fit(X)
-    core_samples_mask = np.zeros_like(db.labels_, dtype=bool)
-    core_samples_mask[db.core_sample_indices_] = True
-    labels = db.labels_
-else:
-    from dbscan import DBSCAN
-    labels, core_samples_mask = DBSCAN(X, eps=0.3, min_samples=10)
+# from sklearn.cluster import DBSCAN
+from dbscan import sklDBSCAN as DBSCAN
+db = DBSCAN(eps=0.3, min_samples=10).fit(X)
+core_samples_mask = np.zeros_like(db.labels_, dtype=bool)
+core_samples_mask[db.core_sample_indices_] = True
+labels = db.labels_
+
+# direct call of the C API:
+# from dbscan import DBSCAN
+# labels, core_samples_mask = DBSCAN(X, eps=0.3, min_samples=10)
 
 # #############################################################################
 # Metrics
