@@ -17,8 +17,7 @@ TEST(testDBSCAN, smallCluster1) {
   data[6] = 2.5; data[7] = 1.5;
   data[8] = 4; data[9] = 0;
 
-  auto clusterer = Wrapper::Caller(data.get(), dim, n);
-  clusterer.computeDBSCAN(1.42, 3, coreFlag.get(), cluster.get());
+  DBSCAN(data.get(), dim, n, 1.42, 3, coreFlag.get(), cluster.get());
 
   EXPECT_EQ(coreFlag[0], 0);
   EXPECT_EQ(coreFlag[1], 1);
@@ -46,8 +45,7 @@ TEST(testDBSCAN, smallCluster1_largeEps) {
   data[6] = 2.5; data[7] = 1.5;
   data[8] = 4; data[9] = 0;
 
-  auto clusterer = Wrapper::Caller(data.get(), dim, n);
-  clusterer.computeDBSCAN(5.7, 3, coreFlag.get(), cluster.get());
+  DBSCAN(data.get(), dim, n, 5.7, 3, coreFlag.get(), cluster.get());
 
   EXPECT_EQ(coreFlag[0], 1);
   EXPECT_EQ(coreFlag[1], 1);
@@ -75,8 +73,7 @@ TEST(testDBSCAN, smallCluster1_smallEps) {
   data[6] = 2.5; data[7] = 1.5;
   data[8] = 4; data[9] = 0;
 
-  auto clusterer = Wrapper::Caller(data.get(), dim, n);
-  clusterer.computeDBSCAN(0.7, 3, coreFlag.get(), cluster.get());
+  DBSCAN(data.get(), dim, n, 0.7, 3, coreFlag.get(), cluster.get());
 
   EXPECT_EQ(coreFlag[0], 0);
   EXPECT_EQ(coreFlag[1], 0);

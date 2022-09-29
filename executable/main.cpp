@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "dbscan/point.h"
 #include "dbscan/geometryIO.h"
 #include "dbscan/pbbs/parallel.h"
@@ -22,8 +24,8 @@ int main(int argc, char* argv[]) {
   int* cluster = new int[PIn.n / dim];
   double* data = PIn.A;
 
-  auto clusterer = Wrapper::Caller(data, dim, PIn.n / dim);
-  clusterer.computeDBSCAN(p_epsilon, p_minpts, coreFlag, cluster);
+  if (DBSCAN(data, dim, PIn.n / dim, p_epsilon, p_minpts, coreFlag, cluster))
+    cout << "Error: dimension >20 is not supported." << endl;
 
   if (oFile != NULL) {
     writeArrayToFile("cluster-id", cluster, PIn.n / dim, oFile);

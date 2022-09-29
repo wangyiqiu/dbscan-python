@@ -28,16 +28,16 @@ make -j # this will take a while
 
 The `<data-file>` can be any CSV-like point data file, where each line contains a data point -- see an example [here](https://github.com/wangyiqiu/hdbscan/blob/main/example-data.csv). The data file can be either with or without header. The cluster output `clusters.txt` will contain a cluster ID on each line (other than the first-line header), giving a cluster assignment in the same ordering as the input file. A noise point will have a cluster ID of `-1`.
 
-## Option 2: Use the Python binding (experimental)
+## Option 2: Use the Python binding
 
-We are developing a Python wrapper using Cython. Currently it is still experimental, as it is only tested to work on a fresh copy of Ubuntu 20.04 (x86_64 with Python 3.8+). There are two ways to install it:
+There are two ways to install it:
 
-* Compile it yourself: First install dependencies ``pip3 install -r src/requirements.txt`` and ``sudo apt install libpython3-dev``. Navigate to ``src/``, and run the Make script ``./make.sh``, The compilation will take a few minutes, and generate a ``.so`` library containing the ``DBSCAN`` module.
-* ***OR*** Install it using PyPI: ``pip3 install --user dbscan`` (the latest verion is 0.0.9)
+* Compile it yourself: First install dependencies ``pip3 install -r src/requirements.txt`` and ``sudo apt install libpython3-dev``. Run ``python3 setup.py build --inplace``, The compilation will take a few minutes, and generate a ``.so`` library containing the ``DBSCAN`` module.
+* ***OR*** Install it using PyPI: ``pip3 install --user dbscan`` (the latest version is 0.0.9)
 
 An example for using the Python module is provided in ``src/example.py``. If the dependencies above are installed, simply run ``python3 example.py`` from ``src/`` to reproduce the plots above.
 
-We plan to support more Python versions and environments, and we welcome any contributions that achieve these.
+To create a wheel that is supported universally across many Python versions for your given OS, run ``python setup.py bdist_wheel --py-limited-api=cp{YOUR_PYTHON_VERSION}`` in an environment containing the oldest numpy version available for the version of Python that you are compiling for. For example, for Python 3.8, use numpy 1.17 to compile the wheel. Then, the wheel will work on all Python and numpy versions that are newer that that for your given OS. This is done automatically when installing via pip. When creating the wheel, it is best for the user to correctly specify the version of Python they are using as the argument. It is done automatically, but the process messes with the internals of the wheel package which may not be stable.
 
 ### Python API
 
