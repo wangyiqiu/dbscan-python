@@ -9,9 +9,7 @@ typedef int intT;
 typedef unsigned int uintT;
 typedef double floatT;
 static intT intMax() {return numeric_limits<intT>::max();}
-static uintT uintMax() {return numeric_limits<uintT>::max();}
 static floatT floatMax() {return numeric_limits<floatT>::max();}
-static floatT floatMin() {return numeric_limits<floatT>::lowest();}
 
 #define HOMEGROWN
 

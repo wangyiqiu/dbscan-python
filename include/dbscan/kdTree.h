@@ -87,8 +87,8 @@ class kdTree {
     if(cache) {
       if(!accum) accum = new vecT();
       root->rangeNeighbor(queryPt, r, pMin1, pMax1, accum);
-      for (intT i=0; i<accum->size(); ++i) {
-        if(doTerm(accum->at(i))) break;
+			for (auto accum_i : *accum) {
+        if(doTerm(accum_i)) break;
       }
       return accum;
     } else {
