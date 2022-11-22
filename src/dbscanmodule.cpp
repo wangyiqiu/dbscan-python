@@ -1,4 +1,4 @@
-#define DBSCAN_VERSION "0.0.9"
+#define DBSCAN_VERSION "0.0.10"
 
 #include "Python.h"
 #include "numpy/arrayobject.h"
@@ -14,7 +14,7 @@ static PyObject* DBSCAN_py(PyObject* self, PyObject* args, PyObject *kwargs)
 
     static const char *kwlist[] = {"X", "eps", "min_samples", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O|di", (char**)kwlist,
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O|di:DBSCAN", (char**)kwlist,
                                      &Xobj, &eps, &min_samples))
     {
         return NULL;

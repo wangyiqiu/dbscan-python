@@ -7,6 +7,7 @@ import os
 
 # Override wheel's default ABI tag.
 try:
+    if sys.implementation.name != 'cpython': raise
     import wheel.bdist_wheel
 
     current_tag = f"cp{sys.version_info.major}{sys.version_info.minor}"
@@ -31,6 +32,13 @@ with open("src/dbscanmodule.cpp", "r") as fh:
     assert isinstance(version, str)
 
 
+if os.name == 'nt':
+    # Windows compile time arguments
+    extra_compile_args = ["/std:c++17", "/Ot"]
+else:
+    # Mac/Linux GCC compile time arguments
+    extra_compile_args = ["-std=c++17", "-pthread", "-g", "-O3", "-fPIC", "-Wno-unused"]
+
 setuptools.setup(
     name="dbscan",
     version=version,
@@ -48,7 +56,7 @@ setuptools.setup(
         "dbscan._dbscan",
         ["src/dbscanmodule.cpp", "src/capi.cpp"],
         language = 'c++',
-        extra_compile_args=["-std=c++17", "-pthread", "-g", "-O3", "-fPIC", "-Wno-unused"],
+        extra_compile_args=extra_compile_args,
         include_dirs=[numpy.get_include(), 'include'],
         py_limited_api=True,
         define_macros=[('Py_LIMITED_API', '0x03020000'), ('NPY_NO_DEPRECATED_API', 'NPY_1_7_API_VERSION')]
