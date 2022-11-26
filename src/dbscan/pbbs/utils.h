@@ -26,6 +26,7 @@
 #include <algorithm>
 #include "parallel.h"
 
+
 #if defined(__APPLE__)
 #define PTCMPXCH "  cmpxchgl %2,%1\n"
 #else
@@ -94,10 +95,12 @@ inline unsigned int hash2(unsigned int a)
     (unsigned int) 0xFFFFFFFF;
 }
 
+/*
+
 // compare and swap on 8 byte quantities
 inline bool LCAS(long *ptr, long oldv, long newv) {
   unsigned char ret;
-  /* Note that sete sets a 'byte' not the word */
+  // Note that sete sets a 'byte' not the word
   __asm__ __volatile__ (
                 "  lock\n"
                 "  cmpxchgq %2,%1\n"
@@ -111,7 +114,7 @@ inline bool LCAS(long *ptr, long oldv, long newv) {
 // compare and swap on 4 byte quantity
 inline bool SCAS(int *ptr, int oldv, int newv) {
   unsigned char ret;
-  /* Note that sete sets a 'byte' not the word */
+  // Note that sete sets a 'byte' not the word
   __asm__ __volatile__ (
                 "  lock\n"
                 "  cmpxchgl %2,%1\n"
@@ -154,8 +157,11 @@ inline bool CAS(ET *ptr, ET oldv, ET newv) {
   }
 }
 
+*/
+
 template <class ET>
-inline bool CAS_GCC(ET *ptr, ET oldv, ET newv) {
+// inline bool CAS_GCC(ET *ptr, ET oldv, ET newv) {
+inline bool CAS(ET *ptr, ET oldv, ET newv) {
   if (sizeof(ET) == 4) {
     return __sync_bool_compare_and_swap((int*)ptr, *((int*)&oldv), *((int*)&newv));
   } else if (sizeof(ET) == 8) {
@@ -170,6 +176,8 @@ inline bool CAS_GCC(ET *ptr, ET oldv, ET newv) {
     abort();
   }
 }
+
+/*
 
 inline long xaddl(long *variable, long value) {
    asm volatile( 
@@ -294,6 +302,23 @@ template <class E1, class E2>
 
 template <class E1, class E2>
   struct secondF {E2 operator() (std::pair<E1,E2> a) {return a.second;} };
+
+*/
+
+template <class ET>
+inline bool writeMin(ET *a, ET b) {
+  ET c; bool r=0;
+  do c = *a; 
+  // while (c > b && !(r=CAS_GCC(a,c,b)));
+  while (c > b && !(r=CAS(a,c,b)));
+  return r;
+}
+
+template <class E>
+struct identityF { E operator() (const E& x) {return x;}};
+
+template <class E>
+struct addF { E operator() (const E& a, const E& b) const {return a+b;}};
 
 }
 

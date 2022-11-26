@@ -26,6 +26,7 @@
 #include "parallel.h"
 #include "utils.h"
 #include "sequence.h"
+#include <atomic>
 using namespace std;
 
 extern intT g_dim;
@@ -33,6 +34,7 @@ extern intT g_dim;
 template <class HASH, class intT>
 class Table {
  public:
+  // typedef typename std::atomic<typename HASH::eType> eType;
   typedef typename HASH::eType eType;
   typedef typename HASH::kType kType;
   intT m;
@@ -382,18 +384,26 @@ struct hashPair {
 static _seq<pair<char*,intT>*> removeDuplicates(_seq<pair<char*,intT>*> S) {
   return removeDuplicates(S,hashPair<hashStr,intT>(hashStr()));}
 
+template<typename myPair>
 struct hashSimplePair {
-  typedef pair<intT,intT> eType;
+  // typedef pair<intT,intT> eType;
+  typedef myPair eType;
   typedef intT kType;
-  eType empty() {return pair<intT,intT>(-1,-1);}
+  // eType empty() {return pair<intT,intT>(-1,-1);}
+  eType empty() {return myPair();}
   kType getKey(eType v) { return v.first; }
   uintT hash(intT s) { return utils::hash(s);}
   int cmp(intT v, intT b) {return (v > b) ? 1 : ((v == b) ? 0 : -1);}
   bool replaceQ(eType s, eType s2) {return 0;}//return s.second > s2.second;}
 };
 
-static _seq<pair<intT,intT> > removeDuplicates(_seq<pair<intT,intT> > A) {
-  return removeDuplicates(A,hashSimplePair());
+// static _seq<pair<intT,intT> > removeDuplicates(_seq<pair<intT,intT> > A) {
+//   return removeDuplicates(A,hashSimplePair());
+// }
+
+template<typename myPair>
+static _seq<myPair> removeDuplicates(_seq<myPair> A) {
+  return removeDuplicates(A,hashSimplePair<myPair>());
 }
 
 
