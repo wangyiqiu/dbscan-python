@@ -50,10 +50,12 @@ class Table {
     parallel_for(0, n, [&](intT i) {A[i] = v;});
   }
 
+/*
  // needs to be in separate routine due to Cilk bugs
   void clear() {
     parallel_for(0, m, [&](intT i) {TA[i] = empty;});
   }
+*/
 
   struct notEmptyF { 
     eType e; notEmptyF(eType _e) : e(_e) {} 
@@ -65,7 +67,7 @@ class Table {
   intT decrementIndex(intT h) {return hashToRange(h-1);}
   bool lessIndex(intT a, intT b) {return 2 * hashToRange(a - b) > m;}
 
-
+/*
   // Size is the maximum number of values the hash table will hold.
   // Overfilling the table could put it into an infinite loop.
  Table(intT size, HASH hashF, float _load) :
@@ -78,6 +80,7 @@ class Table {
     compactL(NULL) 
       { clearA(TA,m,empty); 
       }
+*/
 
  Table(intT size, HASH hashF) :
   load(2.0),
@@ -90,6 +93,7 @@ class Table {
       { clearA(TA,m,empty); 
       }
 
+/*
   // Constructor that takes an array for the hash table space.  The
   // passed size must be a power of 2 and will not be rounded.  Make
   // sure to not call del() if you are passing a pointer to the middle
@@ -109,6 +113,7 @@ class Table {
     m = (intT)1 << utils::log2Up(100+(intT)(load*(float)mm));
     mask = m-1;
   }
+*/
 
   // Deletes the allocated arrays
   void del() {
@@ -124,11 +129,14 @@ class Table {
       eType c;
       c = TA[h];
       intT cmp;
-      if(c==empty && utils::CAS(&TA[h],c,v)) return 1; 
+      // if(c==empty && utils::CAS(&TA[h],c,v)) return 1; 
+      if(c==empty && hashStruct.cas(&TA[h],c,v)) return 1; 
       else if(0 == hashStruct.cmp(vkey,hashStruct.getKey(c))) {
-	if(!hashStruct.replaceQ(v,c))
-	  return 0;
-	else if (utils::CAS(&TA[h],c,v)) return 1;
+	      if(!hashStruct.replaceQ(v,c))
+	        return 0;
+	      // else if (utils::CAS(&TA[h],c,v))
+        else if (hashStruct.cas(&TA[h],c,v))
+          return 1;
       }
       // move to next bucket
       h = incrementIndex(h);
@@ -136,6 +144,7 @@ class Table {
     return 0; // should never get here
   }
 
+  /*
   //for equal keys, first one to arrive at location wins, linear probing
   bool insertWithDuplicates(eType v) {
     kType vkey = hashStruct.getKey(v);
@@ -229,7 +238,7 @@ class Table {
       }
     }
   }
-
+*/
 
   // Returns the value if an equal value is found in the table
   // otherwise returns the "empty" element.
@@ -240,12 +249,13 @@ class Table {
     while (1) {
       if (c == empty) return empty; 
       else if (!hashStruct.cmp(v,hashStruct.getKey(c)))
-	return c;
+	      return c;
       h = incrementIndex(h);
       c = TA[h];
     }
   }
 
+/*
   eType findWithDuplicates(eType v) {
     kType vKey = hashStruct.getKey(v);
     intT h = firstIndex(vKey);
@@ -270,12 +280,14 @@ class Table {
       c = TA[h];
     }
   }
+*/
 
   // returns the number of entries
   intT count() {
     return sequence::mapReduce<intT>(TA,m,utils::addF<intT>(),notEmptyF(empty));
   }
 
+/*
   // returns all the current entries compacted into a sequence
   _seq<eType> entries() {
     bool *FL = newA(bool,m);
@@ -294,8 +306,11 @@ class Table {
 	cout << i << ":" << TA[i] << ",";
     cout << endl;
   }
+
+*/
 };
 
+/*
 template <class HASH, class ET, class intT>
 _seq<ET> removeDuplicates(_seq<ET> S, intT m, HASH hashF) {
   Table<HASH,intT> T(m,hashF,1.0);
@@ -384,6 +399,8 @@ struct hashPair {
 static _seq<pair<char*,intT>*> removeDuplicates(_seq<pair<char*,intT>*> S) {
   return removeDuplicates(S,hashPair<hashStr,intT>(hashStr()));}
 
+*/
+
 template<typename myPair>
 struct hashSimplePair {
   // typedef pair<intT,intT> eType;
@@ -395,8 +412,13 @@ struct hashSimplePair {
   uintT hash(intT s) { return utils::hash(s);}
   int cmp(intT v, intT b) {return (v > b) ? 1 : ((v == b) ? 0 : -1);}
   bool replaceQ(eType s, eType s2) {return 0;}//return s.second > s2.second;}
+  bool cas(eType* p, eType o, eType n) {
+    return std::atomic_compare_exchange_strong_explicit(
+      reinterpret_cast<std::atomic<eType>*>(p), &o, n, std::memory_order_relaxed, std::memory_order_relaxed);
+  }
 };
 
+/*
 // static _seq<pair<intT,intT> > removeDuplicates(_seq<pair<intT,intT> > A) {
 //   return removeDuplicates(A,hashSimplePair());
 // }
@@ -405,6 +427,6 @@ template<typename myPair>
 static _seq<myPair> removeDuplicates(_seq<myPair> A) {
   return removeDuplicates(A,hashSimplePair<myPair>());
 }
-
+*/
 
 #endif

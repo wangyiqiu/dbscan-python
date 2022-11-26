@@ -170,4 +170,9 @@ struct cellHash {
   inline int diffCell(floatT* c1, floatT* c2) {return hashF->compareCell(c1, c2);}
 
   bool replaceQ(eType c1, eType c2) {return 0;}
+
+  bool cas(eType* p, eType o, eType n) {
+    return std::atomic_compare_exchange_strong_explicit(
+      reinterpret_cast<std::atomic<eType>*>(p), &o, n, std::memory_order_relaxed, std::memory_order_relaxed);
+  }
 };

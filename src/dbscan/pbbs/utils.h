@@ -159,6 +159,8 @@ inline bool CAS(ET *ptr, ET oldv, ET newv) {
 
 */
 
+/*
+
 template <class ET>
 // inline bool CAS_GCC(ET *ptr, ET oldv, ET newv) {
 inline bool CAS(ET *ptr, ET oldv, ET newv) {
@@ -176,6 +178,8 @@ inline bool CAS(ET *ptr, ET oldv, ET newv) {
     abort();
   }
 }
+
+*/
 
 /*
 
@@ -305,12 +309,18 @@ template <class E1, class E2>
 
 */
 
+template<typename eType>
+bool myCAS(eType* p, eType o, eType n) {
+  return std::atomic_compare_exchange_strong_explicit(
+    reinterpret_cast<std::atomic<eType>*>(p), &o, n, std::memory_order_relaxed, std::memory_order_relaxed);
+}
+
 template <class ET>
 inline bool writeMin(ET *a, ET b) {
   ET c; bool r=0;
   do c = *a; 
   // while (c > b && !(r=CAS_GCC(a,c,b)));
-  while (c > b && !(r=CAS(a,c,b)));
+  while (c > b &&!(r=myCAS(a,c,b)));
   return r;
 }
 
