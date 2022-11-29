@@ -4,7 +4,6 @@
 #include "dbscan/point.h"
 #include "dbscan/geometryIO.h"
 #include "dbscan/pbbs/parallel.h"
-#include "dbscan/pbbs/gettime.h"
 #include "dbscan/pbbs/parseCommandLine.h"
 
 
