@@ -30,7 +30,8 @@ example = [
 ]
 
 [project.urls]
-homepage = "https://github.com/wangyiqiu/dbscan-python"
+homepage = "https://sites.google.com/view/yiqiuwang/dbscan"
+repository = "https://github.com/wangyiqiu/dbscan-python"
 
 [build-system]
 requires = ["setuptools", "setuptools_scm", "wheel", "oldest-supported-numpy"]
@@ -43,11 +44,19 @@ write_to = "pythonmodule/_version.py"
 # because it will be compatible with all newer releases. Changing the versions
 # could be convienient in the future, but for now, totally backwards compatible
 # wheels work nicely.
-build = "cp36-* cp38-macosx_arm64 cp39-win_arm64" # pp39-*
-skip = "*-win32 *-manylinux_i686 *-musllinux_*"
+#
+# Currently, musllinux is left off because Numpy doesn't publish wheels for it
+# on PyPI. If you want this package, build it from source. Same for rarer
+# architectures, like ppc64le or s390x. You can do this by running the same
+# command you run normally:
+# pip install dbscan
+build = "cp36-* cp38-macosx_arm64" # pp39-* cp39-win_arm64
+skip = "*-win32 *_i686 *-musllinux_*"
 
 [tool.cibuildwheel.macos]
 archs = ["x86_64", "arm64"]
 
-[tool.cibuildwheel.linux]
-archs = ["auto", "aarch64"]
+# We will only build aarch64 when merged into master to save on compilation
+# time.
+# [tool.cibuildwheel.linux]
+# archs = ["auto", "aarch64"]

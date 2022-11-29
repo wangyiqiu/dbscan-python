@@ -1,6 +1,7 @@
 #ifndef GETTIME_H
 #define GETTIME_H
 
+/*
 #include <stdlib.h>
 #include <sys/time.h>
 #include <iomanip>
@@ -91,5 +92,7 @@ struct timing {
 // #define reportTime(_str) _tm.reportTotal(_str);
 // #define nextTime(_string) _tm.reportNext(_string);
 // #define nextTimeN() _tm.reportT(_tm.next());
+
+*/
 
 #endif

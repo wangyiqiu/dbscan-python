@@ -126,7 +126,8 @@ point<dim> pMinSerial(point<dim>* items, intT n) {
 template<int dim>
 point<dim> pMinParallel(point<dim>* items, intT n) {
   point<dim> pMin = point<dim>(items[0].x);
-  intT P = getWorkers()*8;
+  // intT P = getWorkers()*8;
+  static const intT P = 36 * 8;
   intT blockSize = (n+P-1)/P;
   point<dim> localMin[P];
   for (intT i=0; i<P; ++i) {

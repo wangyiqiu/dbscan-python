@@ -33,11 +33,15 @@ else:
 
 install_requires = [f'numpy>={numpy.__version__},<2']
 if sys.hexversion < 0x03080000:
-    install_requires.append('importlib-resources; python_version<3.8')
+    install_requires.append('importlib-resources ; python_version<"3.8"')
 
 depends = [f for f in glob.glob('include/**', recursive=True) if not os.path.isdir(f)]
 
+version = setuptools_scm.get_version()
+
 setuptools.setup(
+    name="dbscan",
+    version=version,
     packages=('dbscan',),
     package_dir={'dbscan': 'pythonmodule'},
     ext_modules=[Extension(
@@ -51,7 +55,7 @@ setuptools.setup(
         define_macros=[
             ('Py_LIMITED_API', '0x03020000'),
             ('NPY_NO_DEPRECATED_API', 'NPY_1_7_API_VERSION'),
-            ('DBSCAN_VERSION', json.dumps(setuptools_scm.get_version())),
+            # ('DBSCAN_VERSION', json.dumps(version)),
         ]
     )],
     python_requires=f'>={sys.version_info.major}.{sys.version_info.minor},<4',

@@ -28,8 +28,8 @@
 #include "utils.h"
 
 // For fast popcount
-#include <immintrin.h>
-#include <x86intrin.h>
+// #include <immintrin.h>
+// #include <x86intrin.h>
 
 using namespace std;
 
