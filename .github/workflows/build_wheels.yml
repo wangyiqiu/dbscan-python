@@ -13,6 +13,24 @@ on: [push, pull_request]
 #       - published
 
 jobs:
+  build-and-test:
+    name: Build executable and run test
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Build
+        run: |
+          mkdir build
+          cd build
+          cmake ..
+          make -j
+      - name: Test
+        run: |
+          cd build
+          ctest --no-tests=error --output-on-failure
+
   build_wheels:
     name: Build wheels on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
