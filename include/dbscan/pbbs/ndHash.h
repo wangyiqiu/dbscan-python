@@ -53,8 +53,8 @@ class Table {
     parallel_for(0, m, [&](intT i) {TA[i] = empty;});
   }
 
-  struct notEmptyF { 
-    eType e; notEmptyF(eType _e) : e(_e) {} 
+  struct notEmptyF {
+    eType e; notEmptyF(eType _e) : e(_e) {}
     int operator() (eType a) {return e != a;}};
 
   uintT hashToRange(intT h) {return h & mask;}
@@ -67,25 +67,25 @@ class Table {
   // Size is the maximum number of values the hash table will hold.
   // Overfilling the table could put it into an infinite loop.
  Table(intT size, HASH hashF, float _load) :
-  load(_load),
     m((intT)1 << utils::log2Up(100+(intT)(_load*(float)size))),
     mask(m-1),
     empty(hashF.empty()),
-    hashStruct(hashF), 
+    hashStruct(hashF),
     TA(newA(eType,m)),
-    compactL(NULL) 
-      { clearA(TA,m,empty); 
+    compactL(NULL),
+	  load(_load)
+      { clearA(TA,m,empty);
       }
 
  Table(intT size, HASH hashF) :
-  load(2.0),
     m((intT)1 << utils::log2Up(100+(intT)(2.0*(float)size))),
     mask(m-1),
     empty(hashF.empty()),
-    hashStruct(hashF), 
+    hashStruct(hashF),
     TA(newA(eType,m)),
-    compactL(NULL) 
-      { clearA(TA,m,empty); 
+    compactL(NULL),
+	  load(2.0)
+      { clearA(TA,m,empty);
       }
 
   // Constructor that takes an array for the hash table space.  The
@@ -93,14 +93,14 @@ class Table {
   // sure to not call del() if you are passing a pointer to the middle
   // of an array.
  Table(intT size, eType* _TA, HASH hashF) :
-  load(1.0),
-    m(size), 
+    m(size),
     mask(m-1),
     empty(hashF.empty()),
-    hashStruct(hashF), 
+    hashStruct(hashF),
     TA(newA(eType,m)),
-    compactL(NULL) 
-      { clearA(TA,m,empty); 
+    compactL(NULL),
+	  load(1.0)
+      { clearA(TA,m,empty);
       }
 
   void setActive(intT mm) {
@@ -110,7 +110,7 @@ class Table {
 
   // Deletes the allocated arrays
   void del() {
-    free(TA); 
+    free(TA);
     if (compactL != NULL) free(compactL);
   }
 
@@ -121,8 +121,7 @@ class Table {
     while (1) {
       eType c;
       c = TA[h];
-      intT cmp;
-      if(c==empty && utils::CAS(&TA[h],c,v)) return 1; 
+      if(c==empty && utils::CAS(&TA[h],c,v)) return 1;
       else if(0 == hashStruct.cmp(vkey,hashStruct.getKey(c))) {
 	if(!hashStruct.replaceQ(v,c))
 	  return 0;
@@ -141,8 +140,7 @@ class Table {
     while (1) {
       eType c;
       c = TA[h];
-      intT cmp;
-      if(c==empty && utils::CAS(&TA[h],c,v)) return 1; 
+      if(c==empty && utils::CAS(&TA[h],c,v)) return 1;
       // move to next bucket
       h = incrementIndex(h);
     }
@@ -160,7 +158,7 @@ class Table {
     eType c = TA[j];
 
     if (c == empty) return true;
-      
+
     // find first location with priority less or equal to v's priority
     while(c != empty && (cmp = hashStruct.cmp(v,hashStruct.getKey(c))) != 0) {
       j = incrementIndex(j);
@@ -175,7 +173,7 @@ class Table {
       //   c = TA[j] at some previous time (could now be changed)
       //   i = h(v)
       //   cmp = compare v to key of c (1 if greater, 0 equal, -1 less)
-      
+
       if (cmp != 0){//why doesn't the following work as the condition???
 	//c==empty || hashStruct.cmp(v,hashStruct.getKey(c)) != 0) {
         // v does not match key of c, need to move down one and exit if
@@ -234,9 +232,9 @@ class Table {
   // due to prioritization, can quit early if v is greater than cell
   eType find(kType v) {
     intT h = firstIndex(v);
-    eType c = TA[h]; 
+    eType c = TA[h];
     while (1) {
-      if (c == empty) return empty; 
+      if (c == empty) return empty;
       else if (!hashStruct.cmp(v,hashStruct.getKey(c)))
 	return c;
       h = incrementIndex(h);
@@ -287,7 +285,7 @@ class Table {
   // prints the current entries along with the index they are stored at
   void print() {
     cout << "vals = ";
-    for (intT i=0; i < m; i++) 
+    for (intT i=0; i < m; i++)
       if (TA[i] != empty)
 	cout << i << ":" << TA[i] << ",";
     cout << endl;
@@ -300,7 +298,7 @@ _seq<ET> removeDuplicates(_seq<ET> S, intT m, HASH hashF) {
   ET* A = S.A;
   parallel_for(0, S.n, [&](intT i) { T.insert(A[i]);});
   _seq<ET> R = T.entries();
-  T.del(); 
+  T.del();
   return R;
 }
 
@@ -319,12 +317,6 @@ struct hashInt {
   int cmp(kType v, kType b) {return (v > b) ? 1 : ((v == b) ? 0 : -1);}
   bool replaceQ(eType v, eType b) {return 0;}
 };
-
-// works for non-negative integers (uses -1 to mark cell as empty)
-
-static _seq<intT> removeDuplicates(_seq<intT> A) {
-  return removeDuplicates(A,hashInt<intT>());
-}
 
 //typedef Table<hashInt> IntTable;
 //static IntTable makeIntTable(int m) {return IntTable(m,hashInt());}
@@ -354,9 +346,6 @@ struct hashStr {
   bool replaceQ(eType s, eType s2) {return 0;}
 };
 
-static _seq<char*> removeDuplicates(_seq<char*> S) {
-  return removeDuplicates(S,hashStr());}
-
 template <class intT>
 static Table<hashStr,intT> makeStrTable(intT m, float load) {
   return Table<hashStr,intT>(m,hashStr(),load);}
@@ -379,9 +368,6 @@ struct hashPair {
     return 0;}//s->second > s2->second;}
 };
 
-static _seq<pair<char*,intT>*> removeDuplicates(_seq<pair<char*,intT>*> S) {
-  return removeDuplicates(S,hashPair<hashStr,intT>(hashStr()));}
-
 struct hashSimplePair {
   typedef pair<intT,intT> eType;
   typedef intT kType;
@@ -391,10 +377,5 @@ struct hashSimplePair {
   int cmp(intT v, intT b) {return (v > b) ? 1 : ((v == b) ? 0 : -1);}
   bool replaceQ(eType s, eType s2) {return 0;}//return s.second > s2.second;}
 };
-
-static _seq<pair<intT,intT> > removeDuplicates(_seq<pair<intT,intT> > A) {
-  return removeDuplicates(A,hashSimplePair());
-}
-
 
 #endif

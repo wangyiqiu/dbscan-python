@@ -1,17 +1,20 @@
+#define DBSCAN_VERSION "0.0.10"
+
 #include "Python.h"
 #include "numpy/arrayobject.h"
-#include "Caller.h"
+#include "dbscan/capi.h"
 
-static PyObject* DBSCAN(PyObject* self, PyObject* args, PyObject *kwargs)
+
+static PyObject* DBSCAN_py(PyObject* self, PyObject* args, PyObject *kwargs)
 {
     PyObject *Xobj;
     PyArrayObject *X = NULL;
     double eps = 0.5;
     int min_samples = 5;
 
-    static char *kwlist[] = {"X", "eps", "min_samples", NULL};
+    static const char *kwlist[] = {"X", "eps", "min_samples", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O|di", kwlist,
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O|di:DBSCAN", (char**)kwlist,
                                      &Xobj, &eps, &min_samples))
     {
         return NULL;
@@ -36,15 +39,15 @@ static PyObject* DBSCAN(PyObject* self, PyObject* args, PyObject *kwargs)
     npy_intp n = dims[0];
     npy_intp dim = dims[1];
 
-    if (dim <= 1)
+    if (dim < DBSCAN_MIN_DIMS)
     {
-        PyErr_SetString(PyExc_ValueError, "DBSCAN: invalid input data dimensionality (has to >1)");
+        PyErr_SetString(PyExc_ValueError, "DBSCAN: invalid input data dimensionality (has to >=" Py_STRINGIFY(DBSCAN_MIN_DIMS) ")");
         return NULL;
     }
 
-    if (dim > 20)
+    if (dim > DBSCAN_MAX_DIMS)
     {
-        PyErr_SetString(PyExc_ValueError, "DBSCAN: dimension >20 is not supported");
+        PyErr_SetString(PyExc_ValueError, "DBSCAN: dimension >" Py_STRINGIFY(DBSCAN_MAX_DIMS) " is not supported");
         return NULL;
     }
 
@@ -57,18 +60,16 @@ static PyObject* DBSCAN(PyObject* self, PyObject* args, PyObject *kwargs)
     PyArrayObject* labels = (PyArrayObject*)PyArray_SimpleNew(1, &n, NPY_INT);
 
     DBSCAN(
-        (double*)PyArray_DATA(X),
         dim,
         n,
+        (double*)PyArray_DATA(X),
         eps,
         min_samples,
         (bool*)PyArray_DATA(core_samples),
         (int*)PyArray_DATA(labels)
     );
 
-    PyObject* ret = PyTuple_Pack(2, labels, core_samples);
-    Py_IncRef(ret);
-    return ret;
+    return PyTuple_Pack(2, labels, core_samples);
 }
 
 PyDoc_STRVAR(doc_DBSCAN,
@@ -99,26 +100,25 @@ core_samples : np.ndarray[tuple[n], np.bool_]\n\
 \n");
 
 static struct PyMethodDef methods[] = {
-    {"DBSCAN", (PyCFunction)(void*)(PyCFunctionWithKeywords) DBSCAN, METH_VARARGS | METH_KEYWORDS, doc_DBSCAN},
+    {"DBSCAN", (PyCFunction)(void*)(PyCFunctionWithKeywords) DBSCAN_py, METH_VARARGS | METH_KEYWORDS, doc_DBSCAN},
     {NULL, NULL, 0, NULL}
 };
-
-typedef struct {
-    PyObject *DBSCAN;
-} dbscanModuleState;
 
 static struct PyModuleDef dbscanModule =
 {
     PyModuleDef_HEAD_INIT,
-    "dbscan",
+    "_dbscan",
     "",
-    sizeof(dbscanModuleState),
+    0,
     methods
 };
 
 PyMODINIT_FUNC
-PyInit_dbscan (void)
+PyInit__dbscan(void)
 {
     import_array();
-    return PyModule_Create(&dbscanModule);
+    PyObject *module = PyModule_Create(&dbscanModule);
+    PyModule_AddStringConstant(module, "__version__", DBSCAN_VERSION);
+
+    return module;
 }

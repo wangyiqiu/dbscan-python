@@ -85,11 +85,10 @@ struct grid {
   *   @param r box cell size.
   */
   grid(intT cellMax, geoPointT pMinn, floatT rr):
-    pMin(pMinn), cellCapacity(cellMax), totalPoints(0), r(rr) {
+    r(rr), pMin(pMinn), cellCapacity(cellMax), totalPoints(0) {
 
     cells = newA(cellT, cellCapacity);
     nbrCache = newA(cellBuf*, cellCapacity);
-    intT initSize = dim*dim;
     parallel_for(0, cellCapacity, [&](intT i) {
 	nbrCache[i] = NULL;
 	cells[i].init();
@@ -144,8 +143,8 @@ struct grid {
                    return false;};//todo, optimize
     if (nbrCache[bait-cells]) {
       auto accum = nbrCache[bait-cells];
-      for (intT i=0; i<accum->size(); ++i) {
-        if(fWrap(accum->at(i))) break;
+      for (auto accum_i : *accum) {
+        if(fWrap(accum_i)) break;
       }
     } else {
       floatT hop = sqrt(dim + 3) * 1.0000001;
@@ -163,8 +162,8 @@ struct grid {
                  };
     if (nbrCache[bait-cells]) {
       auto accum = nbrCache[bait-cells];
-      for (intT i=0; i<accum->size(); ++i) {
-        if(fWrap(accum->at(i))) break;
+      for (auto accum_i : *accum) {
+        if(fWrap(accum_i)) break;
       }
     } else {
       floatT hop = sqrt(dim + 3) * 1.0000001;

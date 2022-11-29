@@ -1,12 +1,12 @@
 #include <iostream>
 
+#include "dbscan/capi.h"
 #include "dbscan/point.h"
 #include "dbscan/geometryIO.h"
 #include "dbscan/pbbs/parallel.h"
 #include "dbscan/pbbs/gettime.h"
 #include "dbscan/pbbs/parseCommandLine.h"
 
-#include "Caller.h"
 
 int main(int argc, char* argv[]) {
   commandLine P(argc,argv,"[-o <outFile>] [-eps <p_epsilon>] [-minpts <p_minpts>] <inFile>");
@@ -24,7 +24,7 @@ int main(int argc, char* argv[]) {
   int* cluster = new int[PIn.n / dim];
   double* data = PIn.A;
 
-  if (DBSCAN(data, dim, PIn.n / dim, p_epsilon, p_minpts, coreFlag, cluster))
+  if (DBSCAN(dim, PIn.n / dim, data, p_epsilon, p_minpts, coreFlag, cluster))
     cout << "Error: dimension >20 is not supported." << endl;
 
   if (oFile != NULL) {

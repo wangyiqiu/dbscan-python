@@ -13,7 +13,7 @@
 // #define VERBOSE
 
 template<int dim>
-intT* DBSCAN(floatT* PF, intT n, double epsilon, intT minPts, bool* coreFlagOut, intT* coreFlag, intT* cluster) {
+int DBSCAN(intT n, floatT* PF, double epsilon, intT minPts, bool* coreFlagOut, intT* coreFlag, intT* cluster) {
   typedef point<dim> pointT;
   typedef grid<dim, pointT> gridT;
   typedef cell<dim, pointT> cellT;
@@ -84,8 +84,6 @@ intT* DBSCAN(floatT* PF, intT n, double epsilon, intT minPts, bool* coreFlagOut,
     });
 
   typedef kdTree<dim, pointT> treeT;
-  typedef kdNode<dim, pointT> nodeT;
-  typedef typename nodeT::bcp bcpT;
   auto trees = newA(treeT*, G->numCell());
   parallel_for(0, G->numCell(), [&](intT i) {trees[i] = NULL;});
 
@@ -98,13 +96,11 @@ intT* DBSCAN(floatT* PF, intT n, double epsilon, intT minPts, bool* coreFlagOut,
 
   auto uf = unionFind(G->numCell());
 
-  floatT bcpTotalTime = 0; timing t1;
+  timing t1;
   parallel_for(0, G->numCell(), [&](intT i) {
       if (ccFlag[i]) {
-        auto ti = trees[i];
         auto procTj = [&](cellT* cj) {
                         intT j = cj - G->getCell(0);
-                        auto tj = trees[j];
                         if (j < i && ccFlag[j] &&
                             uf.find(i) != uf.find(j)) {
                           if(hasEdge<cellT, treeT, pointT>(i, j, coreFlag, P, epsilon, G->getCell(0), trees)) {
@@ -213,6 +209,5 @@ intT* DBSCAN(floatT* PF, intT n, double epsilon, intT minPts, bool* coreFlagOut,
 #ifdef VERBOSE
   cout << "output-time = " << tt.stop() << endl;
 #endif
-  return cluster;
+  return 0;
 }
-

@@ -37,3 +37,6 @@
 # Build files
 build/
 dbscan/build/
+.DS_Store
+dbscan.egg-info/
+__pycache__

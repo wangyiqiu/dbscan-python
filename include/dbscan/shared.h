@@ -44,7 +44,7 @@ struct hashFloatToCell {
   int randInt[dim];
   floatT r;
   pointT pMin;
-  hashFloatToCell(pointT pMinn, floatT rr): pMin(pMinn), r(rr) {
+  hashFloatToCell(pointT pMinn, floatT rr): r(rr), pMin(pMinn) {
     srand(time(NULL));
     for (intT i = 0; i < dim; i++) {
       if(noRandom) randInt[i] = rands[i] % range + 1;

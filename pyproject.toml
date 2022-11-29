@@ -1,2 +1,50 @@
+[project]
+name = "dbscan"
+authors = [
+    {name = "Yiqiu Wang", email = "yiqiu_wang@icloud.com"}
+]
+description = "Theoretically efficient and practical parallel DBSCAN"
+readme = "README.md"
+keywords = ['cluster', 'clustering', 'density', 'dbscan']
+license = {text = "MIT"}
+classifiers = [
+    'Development Status :: 2 - Pre-Alpha',
+    'Intended Audience :: Science/Research',
+    'Intended Audience :: Developers',
+    "License :: OSI Approved :: MIT License",
+    'Programming Language :: C++',
+    'Programming Language :: Python :: 3',
+    'Topic :: Software Development',
+    'Topic :: Scientific/Engineering',
+]
+
+dynamic = ["version", "dependencies", "requires-python"]
+
+[project.optional-dependencies]
+scikit-learn = [
+    "scikit-learn"
+]
+example = [
+    "scikit-learn",
+    "matplotlib"
+]
+
+[project.urls]
+homepage = "https://github.com/wangyiqiu/dbscan-python"
+
 [build-system]
 requires = ["setuptools", "wheel", "oldest-supported-numpy"]
+
+[tool.cibuildwheel]
+# TODO: Update the pypy to the latest version. This is unnecesary for cpython
+# because it will be compatible with all newer releases. Changing the versions
+# could be convienient in the future, but for now, totally backwards compatible
+# wheels work nicely.
+build = "cp36-* cp38-macosx_arm64 cp39-win_arm64 pp39-*"
+skip = "*-win32 *-manylinux_i686 *-musllinux_*"
+
+[tool.cibuildwheel.macos]
+archs = ["x86_64"] # "arm64"
+
+[tool.cibuildwheel.linux]
+archs = ["auto"] # "aarch64"

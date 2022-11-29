@@ -43,32 +43,11 @@ static int __jj =  mallopt(M_TRIM_THRESHOLD,-1);
 
 namespace utils {
 
-static void myAssert(int cond, std::string s) {
-  if (!cond) {
-    std::cout << s << std::endl;
-    abort();
-  }
-}
-
 // returns the log base 2 rounded up (works on ints or longs or unsigned versions)
 template <class T>
 static int log2Up(T i) {
   int a=0;
   T b=i-1;
-  while (b > 0) {b = b >> 1; a++;}
-  return a;
-}
-
-static int logUp(unsigned int i) {
-  int a=0;
-  int b=i-1;
-  while (b > 0) {b = b >> 1; a++;}
-  return a;
-}
-
-static int logUpLong(unsigned long i) {
-  int a=0;
-  long b=i-1;
   while (b > 0) {b = b >> 1; a++;}
   return a;
 }
@@ -84,7 +63,7 @@ inline unsigned int hash(unsigned int a)
    return a;
 }
 
-inline int hashInt(unsigned int a) {  
+inline int hashInt(unsigned int a) {
   return hash(a) & (((unsigned) 1 << 31) - 1);
 }
 
@@ -124,7 +103,7 @@ inline bool SCAS(int *ptr, int oldv, int newv) {
 
 //#if defined(MCX16)
 //ET should be 128 bits and 128-bit aligned
-template <class ET> 
+template <class ET>
   inline bool CAS128(ET* a, ET b, ET c) {
   return __sync_bool_compare_and_swap_16((__int128*)a,*((__int128*)&b),*((__int128*)&c));
 }
@@ -133,8 +112,8 @@ template <class ET>
 // The conditional should be removed by the compiler
 // this should work with pointer types, or pairs of integers
 template <class ET>
-inline bool CAS(ET *ptr, ET oldv, ET newv) { 
-  if (sizeof(ET) == 1) { 
+inline bool CAS(ET *ptr, ET oldv, ET newv) {
+  if (sizeof(ET) == 1) {
     return __sync_bool_compare_and_swap_1((bool*) ptr, *((bool*) &oldv), *((bool*) &newv));
   } else if (sizeof(ET) == 8) {
     return __sync_bool_compare_and_swap_8((long*) ptr, *((long*) &oldv), *((long*) &newv));
@@ -142,7 +121,7 @@ inline bool CAS(ET *ptr, ET oldv, ET newv) {
   } else if (sizeof(ET) == 4) {
     return __sync_bool_compare_and_swap_4((int *) ptr, *((int *) &oldv), *((int *) &newv));
     //return utils::SCAS((int *) ptr, *((int *) &oldv), *((int *) &newv));
-  } 
+  }
 //#if defined(MCX16)
   else if (sizeof(ET) == 16) {
     return utils::CAS128(ptr, oldv, newv);
@@ -160,7 +139,7 @@ inline bool CAS_GCC(ET *ptr, ET oldv, ET newv) {
     return __sync_bool_compare_and_swap((int*)ptr, *((int*)&oldv), *((int*)&newv));
   } else if (sizeof(ET) == 8) {
     return __sync_bool_compare_and_swap((long*)ptr, *((long*)&oldv), *((long*)&newv));
-  } 
+  }
 #ifdef MCX16
   else if(sizeof(ET) == 16)
     return __sync_bool_compare_and_swap_16((__int128*)ptr,*((__int128*)&oldv),*((__int128*)&newv));
@@ -172,7 +151,7 @@ inline bool CAS_GCC(ET *ptr, ET oldv, ET newv) {
 }
 
 inline long xaddl(long *variable, long value) {
-   asm volatile( 
+   asm volatile(
 		"lock; xaddl %%eax, %2;"
 		:"=a" (value)                   //Output
 		: "a" (value), "m" (*variable)  //Input
@@ -181,7 +160,7 @@ inline long xaddl(long *variable, long value) {
 }
 
 inline int xaddi(int *variable, int value) {
-   asm volatile( 
+   asm volatile(
 		"lock; xadd %%eax, %2;"
 		:"=a" (value)                   //Output
 		: "a" (value), "m" (*variable)  //Input
@@ -206,7 +185,7 @@ inline ET xadd(ET *variable, ET value) {
 
 template <class ET>
 inline ET fetchAndAdd(ET *a, ET b) {
-  volatile ET newV, oldV; 
+  volatile ET newV, oldV;
   //abort();
   do {oldV = *a; newV = oldV + b;}
   while (!CAS_GCC(a, oldV, newV));
@@ -215,14 +194,14 @@ inline ET fetchAndAdd(ET *a, ET b) {
 
 template <class ET>
 inline void writeAdd(ET *a, ET b) {
-  volatile ET newV, oldV; 
+  volatile ET newV, oldV;
   do { oldV = *a; newV = oldV + b;}
   while (!CAS_GCC(a, oldV, newV));
 }
 
 template <class ET>
 inline bool writeAddOnce(ET *a, ET b) {
-  volatile ET newV, oldV; 
+  volatile ET newV, oldV;
   oldV = *a; newV = oldV + b;
   return CAS_GCC(a, oldV, newV);
 }
@@ -242,7 +221,7 @@ inline bool writeAddOnce(ET *a, ET b, intT k) {
 template <class ET>
 inline bool writeMax(ET *a, ET b) {
   ET c; bool r=0;
-  do c = *a; 
+  do c = *a;
   while (c < b && !(r=CAS_GCC(a,c,b)));
   return r;
 }
@@ -250,7 +229,7 @@ inline bool writeMax(ET *a, ET b) {
 template <class ET>
 inline bool writeMin(ET *a, ET b) {
   ET c; bool r=0;
-  do c = *a; 
+  do c = *a;
   while (c > b && !(r=CAS_GCC(a,c,b)));
   return r;
 }
@@ -258,7 +237,7 @@ inline bool writeMin(ET *a, ET b) {
 template <class ET>
 inline bool writeMin(ET **a, ET *b) {
   ET* c; bool r = 0;
-  do c = *a; 
+  do c = *a;
   while (c > b && !(r=CAS_GCC(a,c,b)));
   return r;
 }
@@ -266,7 +245,7 @@ inline bool writeMin(ET **a, ET *b) {
  template <class ET, class F>
   inline bool writeMin(ET *a, ET b, F f) {
   ET c; bool r=0;
-  do c = *a; 
+  do c = *a;
   while (f(b,c) && !(r=CAS_GCC(a,c,b)));
   return r;
 }
