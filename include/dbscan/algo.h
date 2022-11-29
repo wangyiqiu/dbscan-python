@@ -173,11 +173,26 @@ int DBSCAN(intT n, floatT* PF, double epsilon, intT minPts, bool* coreFlagOut, i
                      });
   flag[n] = sequence::prefixSum(flag, 0, n);
 
-  typedef Table<hashSimplePair,intT> tableT;
-  auto T = new tableT(n, hashSimplePair());
+  // typedef pair<intT,intT> eType;
+  struct myPair {
+    intT first;
+    intT second;  
+    myPair(intT _first, intT _second): first(_first), second(_second) {}
+    myPair(): first(-1), second(-1) {}
+    inline bool operator==(myPair a) {
+    if(a.first==first && a.second== second)
+       return true;
+      else
+       return false;
+    }
+  };
+
+  typedef Table<hashSimplePair<myPair>,intT> tableT;
+  auto T = new tableT(n, hashSimplePair<myPair>());
   parallel_for(0, n, [&] (intT i) {
                        if (flag[i] != flag[i+1]) {
-                         T->insert(make_pair(cluster[i], flag[i]));
+                         // T->insert(make_pair(cluster[i], flag[i]));
+                         T->insert(myPair(cluster[i], flag[i]));
                        }
                      });
 
