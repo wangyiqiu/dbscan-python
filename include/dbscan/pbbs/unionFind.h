@@ -38,7 +38,8 @@ struct unionFind {
       v = find(v);
       if(u == v) break;
       if(u > v) swap(u,v);
-      if(hooks[u] == intMax() && __sync_bool_compare_and_swap(&hooks[u], intMax(), u)){
+      // if(hooks[u] == intMax() && __sync_bool_compare_and_swap(&hooks[u], intMax(), u)){
+      if(hooks[u] == intMax() && utils::myCAS(&hooks[u], intMax(), u)){
         parents[u]=v;
         break;
       }}
@@ -79,7 +80,8 @@ edgeUnionFind(intT nn): n(nn) {
       v = find(v);
       if(u == v) break;
       if(u > v) swap(u,v);
-      if(hooks[u].first == intMax() && __sync_bool_compare_and_swap(&hooks[u].first, intMax(), c_from)){
+      // if(hooks[u].first == intMax() && __sync_bool_compare_and_swap(&hooks[u].first, intMax(), c_from)){
+      if(hooks[u].first == intMax() && utils::myCAS(&hooks[u].first, intMax(), c_from)){
         parents[u]=v;
         hooks[u].second=c_to;
         break;
