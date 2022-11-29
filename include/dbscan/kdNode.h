@@ -47,7 +47,8 @@ class kdNode {
     }}
 
   inline void boundingBoxParallel() {
-    intT P = getWorkers()*8;
+    // intT P = getWorkers()*8;
+    static const intT P = 36 * 8;
     intT blockSize = (n+P-1)/P;
     pointT localMin[P];
     pointT localMax[P];
