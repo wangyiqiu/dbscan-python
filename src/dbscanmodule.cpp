@@ -1,5 +1,3 @@
-#define DBSCAN_VERSION "0.0.10"
-
 #include "Python.h"
 #include "numpy/arrayobject.h"
 #include "dbscan/capi.h"
@@ -118,7 +116,11 @@ PyInit__dbscan(void)
 {
     import_array();
     PyObject *module = PyModule_Create(&dbscanModule);
+#ifdef DBSCAN_VERSION
     PyModule_AddStringConstant(module, "__version__", DBSCAN_VERSION);
+#endif
+    PyModule_AddIntMacro(module, DBSCAN_MIN_DIMS);
+    PyModule_AddIntMacro(module, DBSCAN_MAX_DIMS);
 
     return module;
 }

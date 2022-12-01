@@ -5,7 +5,7 @@
 #include "dbscan/shared.h"
 #include "dbscan/grid.h"
 #include "dbscan/coreBccp.h"
-#include "dbscan/pbbs/gettime.h"
+// #include "dbscan/pbbs/gettime.h"
 #include "dbscan/pbbs/parallel.h"
 #include "dbscan/pbbs/sampleSort.h"
 #include "dbscan/pbbs/unionFind.h"
@@ -96,7 +96,6 @@ int DBSCAN(intT n, floatT* PF, double epsilon, intT minPts, bool* coreFlagOut, i
 
   auto uf = unionFind(G->numCell());
 
-  timing t1;
   parallel_for(0, G->numCell(), [&](intT i) {
       if (ccFlag[i]) {
         auto procTj = [&](cellT* cj) {
