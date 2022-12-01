@@ -4,7 +4,7 @@ from ._dbscan import *
 from . import _dbscan
 __all__ = tuple(v for v in dir(_dbscan) if v.startswith('_'))
 try:
-    from ._version import __version__
+    from ._version import version as __version__
     __all__ += ('__version__',)
 except:
     pass

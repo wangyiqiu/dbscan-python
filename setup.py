@@ -30,11 +30,6 @@ if os.name == 'nt':
 else:
     # Mac/Linux GCC compile time arguments
     extra_compile_args = ["-std=c++17", "-pthread", "-g", "-O3", "-fPIC", "-Wno-unused"]
-
-install_requires = [f'numpy>={numpy.__version__},<2']
-if sys.hexversion < 0x03080000:
-    install_requires.append('importlib-resources ; python_version<"3.8"')
-
 depends = [f for f in glob.glob('include/**', recursive=True) if not os.path.isdir(f)]
 
 version = setuptools_scm.get_version()
@@ -59,7 +54,7 @@ setuptools.setup(
         ]
     )],
     python_requires=f'>={sys.version_info.major}.{sys.version_info.minor},<4',
-    install_requires=install_requires,
+    install_requires=[f'numpy>={numpy.__version__},<2'],
     extras_require={
         'scikit-learn': ['scikit-learn'],
         'example': ['scikit-learn', 'matplotlib'],

@@ -3,6 +3,9 @@ name = "dbscan"
 authors = [
     {name = "Yiqiu Wang", email = "yiqiu_wang@icloud.com"}
 ]
+maintainers = [
+    {name = "Anirudh Vegesana", email = "avegesan@cs.stanford.edu"}
+]
 description = "Theoretically efficient and practical parallel DBSCAN"
 readme = "README.md"
 keywords = ['cluster', 'clustering', 'density', 'dbscan']
@@ -53,8 +56,10 @@ write_to = "pythonmodule/_version.py"
 build = "cp36-* cp38-macosx_arm64" # pp39-* cp39-win_arm64
 skip = "*-win32 *_i686 *-musllinux_*"
 
-[tool.cibuildwheel.macos]
-archs = ["x86_64", "arm64"]
+# We will only build x86_64 when merged into master to save on compilation
+# time.
+# [tool.cibuildwheel.macos]
+# archs = ["x86_64", "arm64"]
 
 # We will only build aarch64 when merged into master to save on compilation
 # time.
