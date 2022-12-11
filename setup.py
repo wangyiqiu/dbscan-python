@@ -34,6 +34,9 @@ depends = [f for f in glob.glob('include/**', recursive=True) if not os.path.isd
 
 version = setuptools_scm.get_version()
 
+with open("README.md", "r", encoding="utf-8") as fh:
+    long_description = fh.read()
+
 setuptools.setup(
     name="dbscan",
     version=version,
@@ -60,4 +63,26 @@ setuptools.setup(
         'example': ['scikit-learn', 'matplotlib'],
     },
     zip_safe=False,
+
+    # To be removed when setuptools is good enough to support pyproject.toml
+    # completely.
+    author="Yiqiu Wang",
+    author_email="yiqiu_wang@icloud.com",
+    description="Theoretically efficient and practical parallel DBSCAN",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
+    keywords='cluster clustering density dbscan',
+    url="https://github.com/wangyiqiu/dbscan-python",
+    license='MIT',
+    classifiers=[
+        'Development Status :: 2 - Pre-Alpha',
+        'Intended Audience :: Science/Research',
+        'Intended Audience :: Developers',
+        "License :: OSI Approved :: MIT License",
+        'Programming Language :: C++',
+        'Programming Language :: Python :: 3.8',
+        'Topic :: Software Development',
+        'Topic :: Scientific/Engineering',
+        "Operating System :: POSIX :: Linux",
+    ],
 )
