@@ -26,17 +26,48 @@ jobs:
           cd build
           cmake ..
           make -j
+
       - name: Test
         run: |
           cd build
           ctest --no-tests=error --output-on-failure
 
+      - uses: actions/upload-artifact@v3
+        with:
+          name: executable
+          path: ./build/executable/dbscan
+
+  generate_matrix:
+    name: Generate Matrix
+    runs-on: ubuntu-latest
+
+    outputs:
+      OSES: ${{ steps.development.outputs.OSES || steps.production.outputs.OSES }}
+      CIBW_ARCHS_LINUX: ${{ steps.development.outputs.CIBW_ARCHS_LINUX || steps.production.outputs.CIBW_ARCHS_LINUX }}
+
+    steps:
+    - name: Development
+      id: development
+      if: "!startsWith(github.ref, 'refs/tags/v')"
+      run: |
+        echo 'OSES=["ubuntu-latest"]' >> $GITHUB_OUTPUT
+        echo 'CIBW_ARCHS_LINUX="auto"' >> $GITHUB_OUTPUT
+
+    - name: Production
+      id: production
+      if: startsWith(github.ref, 'refs/tags/v')
+      run: |
+        echo 'OSES=["ubuntu-latest", "macos-latest", "windows-latest"]' >> $GITHUB_OUTPUT
+        echo 'CIBW_ARCHS_LINUX="auto aarch64"' >> $GITHUB_OUTPUT
+
   build_wheels:
+    needs: [generate_matrix]
     name: Build wheels on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
+    if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: ${{ fromJson(needs.generate_matrix.outputs.OSES) }}
 
     steps:
       - uses: actions/checkout@v3
@@ -44,32 +75,29 @@ jobs:
           fetch-depth: 0
 
       - name: Set up QEMU
-        if: runner.os == 'Linux' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v'))
+        if: runner.os == 'Linux' && startsWith(github.ref, 'refs/tags/v')
         uses: docker/setup-qemu-action@v2
         with:
           platforms: all
 
-      - name: Build wheels (development)
-        if: github.ref != 'refs/heads/master' && !startsWith(github.ref, 'refs/tags/v')
-        uses: pypa/cibuildwheel@v2.11.2
-        env:
-          CIBW_ARCHS_MACOS: "arm64"
-
-      - name: Build wheels (production)
-        if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')
+      - name: Build wheels
         uses: pypa/cibuildwheel@v2.11.2
         env:
           CIBW_ARCHS_MACOS: "x86_64 arm64"
-          CIBW_ARCHS_LINUX: "auto aarch64"
+          CIBW_ARCHS_LINUX: ${{ fromJson(needs.generate_matrix.outputs.CIBW_ARCHS_LINUX) }}
+          CIBW_TEST_REQUIRES: pytest
+          CIBW_TEST_EXTRAS: "test36"
+          CIBW_TEST_COMMAND: "pytest {package}/test"
 
       - uses: actions/upload-artifact@v3
         with:
+          name: wheels
           path: ./wheelhouse/*.whl
 
   build_sdist:
     name: Build source distribution
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')
+    if: startsWith(github.ref, 'refs/tags/v')
     steps:
       - uses: actions/checkout@v3
         with:
@@ -80,10 +108,11 @@ jobs:
 
       - uses: actions/upload-artifact@v3
         with:
+          name: wheels
           path: dist/*.tar.gz
 
   upload_pypi:
-    needs: [build_and_test, build_wheels, build_sdist]
+    needs: [build_wheels, build_sdist]
     runs-on: ubuntu-latest
     # upload to PyPI on every tag starting with 'v'
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
@@ -94,7 +123,7 @@ jobs:
         with:
           # unpacks default artifact into dist/
           # if `name: artifact` is omitted, the action will create extra parent dir
-          name: artifact
+          name: wheels
           path: dist
 
       - uses: pypa/gh-action-pypi-publish@v1.5.0
