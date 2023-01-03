@@ -302,7 +302,16 @@ class fork_join_scheduler {
   std::unique_ptr<scheduler<Job>> sched;
 
  public:
-  fork_join_scheduler() : sched(std::make_unique<scheduler<Job>>()) {}
+  fork_join_scheduler() {}
+
+  void start() {
+    sched = std::make_unique<scheduler<Job>>();
+  }
+
+  void stop() {
+    auto sched_pt = sched.release();
+    delete sched_pt;
+  }
 
   unsigned int num_workers() { return sched->num_workers(); }
   unsigned int worker_id() { return sched->worker_id(); }

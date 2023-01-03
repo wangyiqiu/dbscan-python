@@ -130,6 +130,14 @@ namespace parlay {
       static fork_join_scheduler fj;
       return fj;
     }
+
+    extern inline void start_scheduler() {
+      get_default_scheduler().start();
+    }
+
+    extern inline void stop_scheduler() {
+      get_default_scheduler().stop();
+    }
   }
 
   inline size_t num_workers() {

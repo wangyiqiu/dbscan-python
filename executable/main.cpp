@@ -8,6 +8,8 @@
 
 
 int main(int argc, char* argv[]) {
+  parlay::internal::start_scheduler();
+
   commandLine P(argc,argv,"[-o <outFile>] [-eps <p_epsilon>] [-minpts <p_minpts>] <inFile>");
   char* iFile = P.getArgument(0);
   char* oFile = P.getOptionValue("-o");
@@ -33,5 +35,8 @@ int main(int argc, char* argv[]) {
   PIn.del();
   delete[] coreFlag;
   delete[] cluster;
+
+  parlay::internal::stop_scheduler();
+
   return 0;
 }

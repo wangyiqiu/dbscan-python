@@ -2,6 +2,7 @@
 #include "dbscan/grid.h"
 #include "dbscan/point.h"
 #include "gtest/gtest.h"
+#include "dbscan/pbbs/parallel.h"
 #include <iostream>
 #include <memory.h>
 
@@ -196,6 +197,9 @@ TEST(testGrid, countNghPoint) {
 }
 
 int main(int argc, char **argv) {
+  parlay::internal::start_scheduler();
   ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
+  auto result = RUN_ALL_TESTS();
+  parlay::internal::stop_scheduler();
+  return result;
 }
