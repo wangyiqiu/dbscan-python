@@ -7,7 +7,7 @@
 
 This repository hosts fast parallel DBSCAN clustering code for low dimensional Euclidean space. The code automatically uses the available threads on a parallel shared-memory machine to speedup DBSCAN clustering. It stems from a paper presented in SIGMOD'20: [Theoretically Efficient and Practical Parallel DBSCAN](https://dl.acm.org/doi/10.1145/3318464.3380582).
 
-Our software on 1 thread is on par with all serial state-of-the-art DBSCAN packages, and provides additional speedup via multi-threading. Below, we show a simple benchmark comparing our code with the DBSCAN implementation of Sklearn, tested on a 4-core computer, and a visualization of the clustering result. The time saved will be more significant on a larger data set and a machine with more cores.
+Our software on 1 thread is on par with all serial state-of-the-art DBSCAN packages, and provides additional speedup via multi-threading. Below, we show a simple benchmark comparing our code with the DBSCAN implementation of Sklearn, tested on a 6-core computer using a 2-dimensional data set with 50000 data points. We also show a visualization of the clustering result on a smaller data set.
 
 Data sets with dimensionality 2 - 20 are supported by default, which can be modified by modifying ``DBSCAN_MIN_DIMS`` and ``DBSCAN_MAX_DIMS`` in the [source code](https://github.com/wangyiqiu/dbscan-python/blob/master/include/dbscan/capi.h).
 
@@ -38,7 +38,7 @@ The `<data-file>` can be any CSV-like point data file, where each line contains 
 There are two ways to install it:
 
 * Install it using PyPI: ``pip3 install --user dbscan`` (you can find the wheels [here](https://pypi.org/project/dbscan/#files))
-* (harder and not recommended) Compile it yourself: First install dependencies ``pip3 install -r src/requirements.txt`` and ``sudo apt install libpython3-dev``. Run ``python3 setup.py build --inplace``, The compilation will take a few minutes, and generate a ``.so`` library containing the ``DBSCAN`` module.
+* (harder and not recommended) Compile it yourself: First install dependencies ``pip3 install -r requirements.txt`` and ``sudo apt install libpython3-dev``. Run ``python3 setup.py build``, The compilation will take a few minutes, and generate a ``.so`` library containing the ``DBSCAN`` module.
 To create a wheel that is supported universally across many Python versions for your given OS, run ``python setup.py bdist_wheel`` in an environment containing the oldest numpy version available for the version of Python that you are compiling for. For example, for Python 3.8, use numpy 1.17 to compile the wheel. Then, the wheel will work on all Python and numpy versions that are newer that that for your given OS. This is done automatically when installing via pip.
 
 An example for using the Python module is provided in ``example.py``. If the dependencies above are installed, simply run ``python3 example.py`` from the root directory to reproduce the plots above.
@@ -52,7 +52,7 @@ labels, core_samples_mask = DBSCAN(X, eps=0.3, min_samples=10)
 
 #### Input
 
-* ``X``: A 2-D Numpy array (``dtype=np.float64``) containing the input data points. The first dimension of ``X`` is the number of data points ``n``, and the second dimension is the data set dimensionality (the maximum supported dimensionality is 20).
+* ``X``: A 2-D Numpy array containing the input data points. The first dimension of ``X`` is the number of data points ``n``, and the second dimension is the data set dimensionality (the maximum supported dimensionality is 20).
 * ``eps``: The epsilon parameter (default 0.5).
 * ``min_samples``: The minPts parameter (default 5).
 
@@ -61,7 +61,7 @@ labels, core_samples_mask = DBSCAN(X, eps=0.3, min_samples=10)
 * ``labels``: A length ``n`` Numpy array (``dtype=np.int32``) containing cluster IDs of the data points, in the same ordering as the input data. Noise points are given a pseudo-ID of ``-1``.
 * ``core_samples_mask``: A length ``n`` Numpy array (``dtype=np.bool``) masking the core points, in the same ordering as the input data.
 
-We provide a complete example below that generates a toy data set, computes the DBSCAN clustering, and visualizes the result as shown in the plot above. Note that before running the example, the dependencies in ``src/requirements.txt`` need to be installed first.
+We provide a complete example below that generates a toy data set, computes the DBSCAN clustering, and visualizes the result as shown in the plot above.
 
 ```
 import numpy as np
@@ -77,8 +77,16 @@ X = StandardScaler().fit_transform(X)
 
 # #############################################################################
 # Compute DBSCAN
-from dbscan import DBSCAN
-labels, core_samples_mask = DBSCAN(X, eps=0.3, min_samples=10)
+
+from dbscan import sklDBSCAN as DBSCAN
+db = DBSCAN(eps=0.3, min_samples=10).fit(X)
+core_samples_mask = np.zeros_like(db.labels_, dtype=bool)
+core_samples_mask[db.core_sample_indices_] = True
+labels = db.labels_
+
+# OR direct call of the C API:
+# from dbscan import DBSCAN
+# labels, core_samples_mask = DBSCAN(X, eps=0.3, min_samples=10)
 
 # #############################################################################
 # Plot result
@@ -86,18 +94,21 @@ import matplotlib.pyplot as plt
 
 n_clusters_ = len(set(labels)) - (1 if -1 in labels else 0)
 n_noise_ = list(labels).count(-1)
+# Black removed and is used for noise instead.
 unique_labels = set(labels)
 colors = [plt.cm.Spectral(each)
           for each in np.linspace(0, 1, len(unique_labels))]
-
 for k, col in zip(unique_labels, colors):
     if k == -1:
         # Black used for noise.
         col = [0, 0, 0, 1]
+
     class_member_mask = (labels == k)
+
     xy = X[class_member_mask & core_samples_mask]
     plt.plot(xy[:, 0], xy[:, 1], 'o', markerfacecolor=tuple(col),
              markeredgecolor='k', markersize=14)
+
     xy = X[class_member_mask & ~core_samples_mask]
     plt.plot(xy[:, 0], xy[:, 1], 'o', markerfacecolor=tuple(col),
              markeredgecolor='k', markersize=6)

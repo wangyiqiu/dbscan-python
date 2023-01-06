@@ -20,7 +20,7 @@ core_samples_mask = np.zeros_like(db.labels_, dtype=bool)
 core_samples_mask[db.core_sample_indices_] = True
 labels = db.labels_
 
-# direct call of the C API:
+# OR direct call of the C API:
 # from dbscan import DBSCAN
 # labels, core_samples_mask = DBSCAN(X, eps=0.3, min_samples=10)
 
