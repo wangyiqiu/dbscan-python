@@ -22,25 +22,10 @@ Data sets with dimensionality 2 - 20 are supported by default, which can be modi
 
 There are two ways to install it:
 
-* Install it using PyPI: ``pip3 install --user dbscan`` (you can find the wheels [here](https://pypi.org/project/dbscan/#files))
-* To create a wheel that is supported universally across many Python versions for your given OS, run ``python setup.py bdist_wheel`` in an environment containing the oldest numpy version available for the version of Python that you are compiling for. For example, for Python 3.8, use numpy 1.17 to compile the wheel. Then, the wheel will work on all Python and numpy versions that are newer that that for your given OS. This is done automatically when installing via pip.
+* Install it using PyPI: ``pip3 install --user dbscan`` (you can find the wheels [here](https://pypi.org/project/dbscan/#files)).
+* To build from scratch for testing: ``pip3 install -e .`` from the project root directory.
 
 An example for using the Python module is provided in ``example.py``. If the dependencies above are installed, simply run ``python3 example.py`` from the root directory to reproduce the plots above.
-
-### Option 2: Use the binary executable
-
-Compile and run the program:
-
-```
-mkdir build
-cd build
-cmake ..
-cd executable
-make -j # this will take a while
-./dbscan -eps 0.1 -minpts 10 -o clusters.txt <data-file>
-```
-
-The `<data-file>` can be any CSV-like point data file, where each line contains a data point -- see an example [here](https://github.com/wangyiqiu/hdbscan/blob/main/example-data.csv). The data file can be either with or without header. The cluster output `clusters.txt` will contain a cluster ID on each line (other than the first-line header), giving a cluster assignment in the same ordering as the input file. A noise point will have a cluster ID of `-1`.
 
 #### Python API
 
@@ -77,15 +62,16 @@ X = StandardScaler().fit_transform(X)
 # #############################################################################
 # Compute DBSCAN
 
-from dbscan import sklDBSCAN as DBSCAN
-db = DBSCAN(eps=0.3, min_samples=10).fit(X)
-core_samples_mask = np.zeros_like(db.labels_, dtype=bool)
-core_samples_mask[db.core_sample_indices_] = True
-labels = db.labels_
+# direct call of the C API:
+from dbscan import DBSCAN
+labels, core_samples_mask = DBSCAN(X, eps=0.3, min_samples=10)
 
-# OR direct call of the C API:
-# from dbscan import DBSCAN
-# labels, core_samples_mask = DBSCAN(X, eps=0.3, min_samples=10)
+# OR calling our sklearn API:
+# from dbscan import sklDBSCAN as DBSCAN
+# db = DBSCAN(eps=0.3, min_samples=10).fit(X)
+# core_samples_mask = np.zeros_like(db.labels_, dtype=bool)
+# core_samples_mask[db.core_sample_indices_] = True
+# labels = db.labels_
 
 # #############################################################################
 # Plot result
@@ -115,6 +101,21 @@ for k, col in zip(unique_labels, colors):
 plt.title('Estimated number of clusters: %d' % n_clusters_)
 plt.show()
 ```
+
+### Option 2: Use the binary executable
+
+Compile and run the program:
+
+```
+mkdir build
+cd build
+cmake ..
+cd executable
+make -j # this will take a while
+./dbscan -eps 0.1 -minpts 10 -o clusters.txt <data-file>
+```
+
+The `<data-file>` can be any CSV-like point data file, where each line contains a data point -- see an example [here](https://github.com/wangyiqiu/hdbscan/blob/main/example-data.csv). The data file can be either with or without header. The cluster output `clusters.txt` will contain a cluster ID on each line (other than the first-line header), giving a cluster assignment in the same ordering as the input file. A noise point will have a cluster ID of `-1`.
 
 ### Option 3: Include directly in your own C++ program
 
