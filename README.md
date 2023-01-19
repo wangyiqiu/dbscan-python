@@ -18,7 +18,16 @@ Data sets with dimensionality 2 - 20 are supported by default, which can be modi
 
 ## Tutorial
 
-### Option 1: Use the binary executable
+### Option 1: Use the Python binding
+
+There are two ways to install it:
+
+* Install it using PyPI: ``pip3 install --user dbscan`` (you can find the wheels [here](https://pypi.org/project/dbscan/#files))
+* To create a wheel that is supported universally across many Python versions for your given OS, run ``python setup.py bdist_wheel`` in an environment containing the oldest numpy version available for the version of Python that you are compiling for. For example, for Python 3.8, use numpy 1.17 to compile the wheel. Then, the wheel will work on all Python and numpy versions that are newer that that for your given OS. This is done automatically when installing via pip.
+
+An example for using the Python module is provided in ``example.py``. If the dependencies above are installed, simply run ``python3 example.py`` from the root directory to reproduce the plots above.
+
+### Option 2: Use the binary executable
 
 Compile and run the program:
 
@@ -32,16 +41,6 @@ make -j # this will take a while
 ```
 
 The `<data-file>` can be any CSV-like point data file, where each line contains a data point -- see an example [here](https://github.com/wangyiqiu/hdbscan/blob/main/example-data.csv). The data file can be either with or without header. The cluster output `clusters.txt` will contain a cluster ID on each line (other than the first-line header), giving a cluster assignment in the same ordering as the input file. A noise point will have a cluster ID of `-1`.
-
-### Option 2: Use the Python binding
-
-There are two ways to install it:
-
-* Install it using PyPI: ``pip3 install --user dbscan`` (you can find the wheels [here](https://pypi.org/project/dbscan/#files))
-* (harder and not recommended) Compile it yourself: First install dependencies ``pip3 install -r requirements.txt`` and ``sudo apt install libpython3-dev``. Run ``python3 setup.py build``, The compilation will take a few minutes, and generate a ``.so`` library containing the ``DBSCAN`` module.
-To create a wheel that is supported universally across many Python versions for your given OS, run ``python setup.py bdist_wheel`` in an environment containing the oldest numpy version available for the version of Python that you are compiling for. For example, for Python 3.8, use numpy 1.17 to compile the wheel. Then, the wheel will work on all Python and numpy versions that are newer that that for your given OS. This is done automatically when installing via pip.
-
-An example for using the Python module is provided in ``example.py``. If the dependencies above are installed, simply run ``python3 example.py`` from the root directory to reproduce the plots above.
 
 #### Python API
 
