@@ -85,9 +85,9 @@ jobs:
         env:
           CIBW_ARCHS_MACOS: "x86_64 arm64"
           CIBW_ARCHS_LINUX: ${{ fromJson(needs.generate_matrix.outputs.CIBW_ARCHS_LINUX) }}
-          # CIBW_TEST_REQUIRES: pytest
-          # CIBW_TEST_EXTRAS: "test36"
-          # CIBW_TEST_COMMAND: "pytest {package}/test"
+          CIBW_TEST_REQUIRES: pytest
+          CIBW_TEST_EXTRAS: "test36"
+          CIBW_TEST_COMMAND: "pytest {package}/test"
 
       - uses: actions/upload-artifact@v3
         with:
