@@ -61,7 +61,7 @@ setuptools.setup(
     extras_require={
         'scikit-learn': ['scikit-learn'],
         'example': ['scikit-learn', 'matplotlib'],
-        # 'py36': ['scikit-learn', 'matplotlib', 'pytest'],
+        'py36': ['scikit-learn', 'matplotlib', 'pytest'],
     },
     zip_safe=False,
 
