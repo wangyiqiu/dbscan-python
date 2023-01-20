@@ -1,6 +1,0 @@
-numpy==1.21.6
-oldest-supported-numpy==2022.11.19
-packaging==22.0
-setuptools-scm==7.1.0
-tomli==2.0.1
-typing_extensions==4.4.0

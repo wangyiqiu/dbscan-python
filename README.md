@@ -25,7 +25,7 @@ There are two ways to install it:
 * Install it using PyPI: ``pip3 install --user dbscan`` (you can find the wheels [here](https://pypi.org/project/dbscan/#files)).
 * To build from scratch for testing: ``pip3 install -e .`` from the project root directory.
 
-An example for using the Python module is provided in ``example.py``. If the dependencies above are installed, simply run ``python3 example.py`` from the root directory to reproduce the plots above.
+An example for using the Python module is provided in ``example.py``. It generates the clustering example above.
 
 #### Python API
 
