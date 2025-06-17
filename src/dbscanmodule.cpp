@@ -4,6 +4,27 @@
 #include "dbscan/pbbs/parallel.h"
 
 
+static bool scheduler_initialized = false;
+static PyObject* scheduler_cleanup_weakref = nullptr;
+
+static void cleanup_scheduler(PyObject *capsule)
+{
+ if (scheduler_initialized)
+ {
+   parlay::internal::stop_scheduler();
+   scheduler_initialized = false;
+ }
+}
+
+static void ensure_scheduler_initialized()
+{
+   if (!scheduler_initialized)
+   {
+       parlay::internal::start_scheduler();
+       scheduler_initialized = true;
+   }
+}
+
 static PyObject* DBSCAN_py(PyObject* self, PyObject* args, PyObject *kwargs)
 {
     PyObject *Xobj;
@@ -58,7 +79,7 @@ static PyObject* DBSCAN_py(PyObject* self, PyObject* args, PyObject *kwargs)
     PyArrayObject* core_samples = (PyArrayObject*)PyArray_SimpleNew(1, &n, NPY_BOOL);
     PyArrayObject* labels = (PyArrayObject*)PyArray_SimpleNew(1, &n, NPY_INT);
 
-    parlay::internal::start_scheduler();
+    ensure_scheduler_initialized();
 
     DBSCAN(
         dim,
@@ -70,8 +91,6 @@ static PyObject* DBSCAN_py(PyObject* self, PyObject* args, PyObject *kwargs)
         (int*)PyArray_DATA(labels)
     );
 
-    parlay::internal::stop_scheduler();
-    
     PyObject* result_tuple = PyTuple_Pack(2, labels, core_samples);
     Py_DECREF(X);
     Py_DECREF(core_samples);
@@ -130,6 +149,11 @@ PyInit__dbscan(void)
 #endif
     PyModule_AddIntMacro(module, DBSCAN_MIN_DIMS);
     PyModule_AddIntMacro(module, DBSCAN_MAX_DIMS);
+    PyObject *capsule = PyCapsule_New((void *)module, "dbscan.scheduler", cleanup_scheduler);
+    if (capsule != NULL)
+    {
+       PyModule_AddObject(module, "_scheduler_capsule", capsule);
+    }
 
     return module;
 }
