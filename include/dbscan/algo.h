@@ -85,7 +85,14 @@ int DBSCAN(intT n, floatT* PF, double epsilon, intT minPts, bool* coreFlagOut, i
 
   typedef kdTree<dim, pointT> treeT;
   auto trees = newA(treeT*, G->numCell());
-  parallel_for(0, G->numCell(), [&](intT i) {trees[i] = NULL;});
+
+  parallel_for(0, G->numCell(), [&](intT i) {
+    if (ccFlag[i]) {
+        trees[i] = new treeT(G->getCell(i)->getItem(), G->getCell(i)->size(), false);
+    } else {
+        trees[i] = NULL;
+    }
+});
 
   // auto degCmp = [&](intT i, intT j) {
   //                 return G->getCell(i)->size() < G->getCell(j)->size();
