@@ -51,7 +51,6 @@ setuptools.setup(
         depends=depends,
         py_limited_api=True,
         define_macros=[
-            ('Py_LIMITED_API', '0x03020000'),
             ('NPY_NO_DEPRECATED_API', 'NPY_1_7_API_VERSION'),
             # ('DBSCAN_VERSION', json.dumps(version)),
         ]

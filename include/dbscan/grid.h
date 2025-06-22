@@ -23,6 +23,7 @@
 
 #pragma once
 
+#include <mutex>
 #include "cell.h"
 #include "point.h"
 #include "shared.h"
@@ -77,6 +78,7 @@ struct grid {
   treeT* tree=NULL;
   intT totalPoints;
   cellBuf **nbrCache;
+  std::mutex* cacheLocks;
 
   /**
   *   Grid constructor.
@@ -89,10 +91,12 @@ struct grid {
 
     cells = newA(cellT, cellCapacity);
     nbrCache = newA(cellBuf*, cellCapacity);
+    cacheLocks = (std::mutex*) malloc(cellCapacity * sizeof(std::mutex));
     parallel_for(0, cellCapacity, [&](intT i) {
-	nbrCache[i] = NULL;
-	cells[i].init();
-      });
+      new (&cacheLocks[i]) std::mutex();
+      nbrCache[i] = NULL;
+      cells[i].init();
+    });
     numCells = 0;
 
     myHash = new cellHashT(pMinn, r);
@@ -101,9 +105,10 @@ struct grid {
 
   ~grid() {
     free(cells);
-    parallel_for(0, numCells, [&](intT i) {
-	if(nbrCache[i]) delete nbrCache[i];
-      });
+    free(cacheLocks);
+    parallel_for(0, cellCapacity, [&](intT i) {
+      if(nbrCache[i]) delete nbrCache[i];
+    });
     free(nbrCache);
     if(myHash) delete myHash;
     if(table) {
@@ -141,14 +146,24 @@ struct grid {
                      }
                    }
                    return false;};//todo, optimize
-    if (nbrCache[bait-cells]) {
-      auto accum = nbrCache[bait-cells];
+    int idx = bait - cells;
+    if (nbrCache[idx]) {
+      auto accum = nbrCache[idx];
       for (auto accum_i : *accum) {
         if(fWrap(accum_i)) break;
       }
     } else {
-      floatT hop = sqrt(dim + 3) * 1.0000001;
-      nbrCache[bait-cells] = tree->rangeNeighbor(bait, r * hop, fStop, fWrap, true, nbrCache[bait-cells]);
+      // wait for other threads to do their thing then try again
+      std::lock_guard<std::mutex> lock(cacheLocks[idx]);
+      if (nbrCache[idx]) {
+        auto accum = nbrCache[idx];
+        for (auto accum_i : *accum) {
+          if (fWrap(accum_i)) break;
+        }
+      } else {
+        floatT hop = sqrt(dim + 3) * 1.0000001;
+        nbrCache[idx] = tree->rangeNeighbor(bait, r * hop, fStop, fWrap, true, nbrCache[idx]);
+      }
     }
   }
 
@@ -160,14 +175,24 @@ struct grid {
                      return f(cell);
                    return false;
                  };
-    if (nbrCache[bait-cells]) {
-      auto accum = nbrCache[bait-cells];
+    int idx = bait - cells;
+    if (nbrCache[idx]) {
+      auto accum = nbrCache[idx];
       for (auto accum_i : *accum) {
-        if(fWrap(accum_i)) break;
+        if (fWrap(accum_i)) break;
       }
     } else {
-      floatT hop = sqrt(dim + 3) * 1.0000001;
-      nbrCache[bait-cells] = tree->rangeNeighbor(bait, r * hop, fStop, fWrap, true, nbrCache[bait-cells]);
+      // wait for other threads to do their thing then try again
+      std::lock_guard<std::mutex> lock(cacheLocks[idx]);
+      if (nbrCache[idx]) {
+        auto accum = nbrCache[idx];
+        for (auto accum_i : *accum) {
+          if (fWrap(accum_i)) break;
+        }
+      } else {
+        floatT hop = sqrt(dim + 3) * 1.0000001;
+        nbrCache[bait-cells] = tree->rangeNeighbor(bait, r * hop, fStop, fWrap, true, nbrCache[idx]);
+      }
     }
   }
 
