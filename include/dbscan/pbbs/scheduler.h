@@ -162,7 +162,7 @@ struct scheduler {
         finished_flag(false) {
     // Stopping condition
     auto finished = [this]() {
-      return finished_flag.load(std::memory_order_acquire);
+      return finished_flag.load(std::memory_order_relaxed);
     };
 
     // Spawn num_threads many threads on startup
@@ -176,7 +176,7 @@ struct scheduler {
   }
 
   ~scheduler() {
-    finished_flag.store(true, std::memory_order_acquire);
+    finished_flag.store(true, std::memory_order_relaxed);
     for (unsigned int i = 1; i < num_threads; i++) {
       spawned_threads[i - 1].join();
     }
@@ -203,7 +203,7 @@ struct scheduler {
   }
 
   // All scheduler threads quit after this is called.
-  void finish() { finished_flag.store(true, std::memory_order_release); }
+  void finish() { finished_flag.store(true, std::memory_order_relaxed); }
 
   // Pop from local stack.
   Job* try_pop() {
@@ -246,7 +246,7 @@ struct scheduler {
   std::vector<Deque<Job>> deques;
   std::vector<attempt> attempts;
   std::vector<std::thread> spawned_threads;
-  std::atomic<int> finished_flag;
+  std::atomic<bool> finished_flag;
 
   // Start an individual scheduler task.  Runs until finished().
   template <typename F>
