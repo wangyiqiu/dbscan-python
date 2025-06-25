@@ -88,23 +88,23 @@ struct Deque {
   Deque() : bot(0), age(age_t{0, 0}) {}
 
   void push_bottom(Job* job) {
-    auto local_bot = bot.load(std::memory_order_relaxed);      // atomic load
-    deq[local_bot].job.store(job, std::memory_order_relaxed);  // shared store
+    auto local_bot = bot.load(std::memory_order_acquire);      // atomic load
+    deq[local_bot].job.store(job, std::memory_order_release);  // shared store
     local_bot += 1;
     if (local_bot == q_size) {
       throw std::runtime_error("internal error: scheduler queue overflow");
     }
-    bot.store(local_bot, std::memory_order_relaxed);  // shared store
+    bot.store(local_bot, std::memory_order_release);  // shared store
     std::atomic_thread_fence(std::memory_order_seq_cst);
   }
 
   Job* pop_top() {
     Job* result = nullptr;
-    auto old_age = age.load(std::memory_order_relaxed);    // atomic load
-    auto local_bot = bot.load(std::memory_order_relaxed);  // atomic load
+    auto old_age = age.load(std::memory_order_acquire);    // atomic load
+    auto local_bot = bot.load(std::memory_order_acquire);  // atomic load
     if (local_bot > old_age.top) {
       auto job =
-          deq[old_age.top].job.load(std::memory_order_relaxed);  // atomic load
+          deq[old_age.top].job.load(std::memory_order_acquire);  // atomic load
       auto new_age = old_age;
       new_age.top = new_age.top + 1;
       if (age.compare_exchange_strong(old_age, new_age))
@@ -117,24 +117,24 @@ struct Deque {
 
   Job* pop_bottom() {
     Job* result = nullptr;
-    auto local_bot = bot.load(std::memory_order_relaxed);  // atomic load
+    auto local_bot = bot.load(std::memory_order_acquire);  // atomic load
     if (local_bot != 0) {
       local_bot--;
-      bot.store(local_bot, std::memory_order_relaxed);  // shared store
+      bot.store(local_bot, std::memory_order_release);  // shared store
       std::atomic_thread_fence(std::memory_order_seq_cst);
       auto job =
-          deq[local_bot].job.load(std::memory_order_relaxed);  // atomic load
-      auto old_age = age.load(std::memory_order_relaxed);      // atomic load
+          deq[local_bot].job.load(std::memory_order_acquire);  // atomic load
+      auto old_age = age.load(std::memory_order_acquire);      // atomic load
       if (local_bot > old_age.top)
         result = job;
       else {
-        bot.store(0, std::memory_order_relaxed);  // shared store
+        bot.store(0, std::memory_order_release);  // shared store
         auto new_age = age_t{old_age.tag + 1, 0};
         if ((local_bot == old_age.top) &&
             age.compare_exchange_strong(old_age, new_age))
           result = job;
         else {
-          age.store(new_age, std::memory_order_relaxed);  // shared store
+          age.store(new_age, std::memory_order_release);  // shared store
           result = nullptr;
         }
         std::atomic_thread_fence(std::memory_order_seq_cst);
@@ -162,7 +162,7 @@ struct scheduler {
         finished_flag(false) {
     // Stopping condition
     auto finished = [this]() {
-      return finished_flag.load(std::memory_order_relaxed);
+      return finished_flag.load(std::memory_order_acquire);
     };
 
     // Spawn num_threads many threads on startup
@@ -176,7 +176,7 @@ struct scheduler {
   }
 
   ~scheduler() {
-    finished_flag.store(true, std::memory_order_relaxed);
+    finished_flag.store(true, std::memory_order_acquire);
     for (unsigned int i = 1; i < num_threads; i++) {
       spawned_threads[i - 1].join();
     }
@@ -203,7 +203,7 @@ struct scheduler {
   }
 
   // All scheduler threads quit after this is called.
-  void finish() { finished_flag.store(true, std::memory_order_relaxed); }
+  void finish() { finished_flag.store(true, std::memory_order_release); }
 
   // Pop from local stack.
   Job* try_pop() {

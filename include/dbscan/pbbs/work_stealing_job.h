@@ -32,16 +32,16 @@ namespace parlay {
 
 struct WorkStealingJob {
   WorkStealingJob() {
-    done.store(false, std::memory_order_relaxed);
+    done.store(false, std::memory_order_release);
   }
   ~WorkStealingJob() = default;
   void operator()() {
-    assert(done.load(std::memory_order_relaxed) == false);
+    assert(done.load(std::memory_order_acquire) == false);
     execute();
-    done.store(true, std::memory_order_relaxed);
+    done.store(true, std::memory_order_release);
   }
   bool finished() {
-    return done.load(std::memory_order_relaxed);
+    return done.load(std::memory_order_acquire);
   }
   virtual void execute() = 0;
   std::atomic<bool> done;

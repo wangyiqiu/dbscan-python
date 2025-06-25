@@ -292,7 +292,7 @@ template <class E1, class E2>
 template<typename eType>
 bool myCAS(eType* p, eType o, eType n) {
   return std::atomic_compare_exchange_strong_explicit(
-    reinterpret_cast<std::atomic<eType>*>(p), &o, n, std::memory_order_relaxed, std::memory_order_relaxed);
+    reinterpret_cast<std::atomic<eType>*>(p), &o, n, std::memory_order_acq_rel, std::memory_order_acquire);
 }
 
 template <class ET>
