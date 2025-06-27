@@ -82,16 +82,17 @@ class Table {
       }
 */
 
- Table(intT size, HASH hashF) :
+  Table(intT size, HASH hashF) :
     m((intT)1 << utils::log2Up(100+(intT)(2.0*(float)size))),
     mask(m-1),
-    empty(hashF.empty()),
     hashStruct(hashF),
     TA(newA(eType,m)),
     compactL(NULL),
 	  load(2.0)
-      { clearA(TA,m,empty);
-      }
+    {
+      empty = hashStruct.empty();
+      clearA(TA,m,empty);
+    }
 
 /*
   // Constructor that takes an array for the hash table space.  The
