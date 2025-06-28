@@ -56,11 +56,10 @@ setuptools.setup(
         ]
     )],
     python_requires=f'>={sys.version_info.major}.{sys.version_info.minor},<4',
-    install_requires=[f'numpy>={numpy.__version__},<2'],
+    install_requires=['numpy>=2.0.0'],
     extras_require={
         'scikit-learn': ['scikit-learn'],
         'example': ['scikit-learn', 'matplotlib'],
-        'py36': ['scikit-learn', 'matplotlib', 'pytest'],
     },
     zip_safe=False,
 
