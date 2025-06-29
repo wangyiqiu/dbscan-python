@@ -1,7 +1,7 @@
 [project]
 name = "dbscan"
 authors = [
-    {name = "Yiqiu Wang", email = "yiqiu_wang@icloud.com"}
+    {name = "Yiqiu Wang", email = "yiqiuwang.work@gmail.com"}
 ]
 maintainers = [
     {name = "Anirudh Vegesana", email = "avegesan@cs.stanford.edu"}
@@ -11,24 +11,32 @@ readme = "README.md"
 keywords = ['cluster', 'clustering', 'density', 'dbscan']
 license = {text = "MIT"}
 classifiers = [
-    'Development Status :: 2 - Pre-Alpha',
+    'Development Status :: 4 - Beta',
     'Intended Audience :: Science/Research',
     'Intended Audience :: Developers',
     "License :: OSI Approved :: MIT License",
     'Programming Language :: C++',
-    'Programming Language :: Python :: 3',
+    'Programming Language :: Python :: 3.9',
+    'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
+    'Programming Language :: Python :: 3.12',
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: MacOS",
     'Topic :: Software Development',
     'Topic :: Scientific/Engineering',
 ]
 
-dynamic = ["version", "dependencies", "requires-python"]
+dynamic = ["version"]
+
+dependencies = [
+    "numpy>=2.0.0",
+    "scikit-learn>=1.0",
+]
+
+requires-python = ">=3.9,<4.0" # Aligns with CIBW_BUILD and NumPy 2.0 support
 
 [project.optional-dependencies]
-scikit-learn = [
-    "scikit-learn"
-]
 example = [
-    "scikit-learn",
     "matplotlib"
 ]
 
@@ -37,8 +45,7 @@ homepage = "https://sites.google.com/view/yiqiuwang/dbscan"
 repository = "https://github.com/wangyiqiu/dbscan-python"
 
 [build-system]
-requires = ["setuptools", "setuptools_scm", "wheel", "numpy>=2.0.0"]
-backend = "setuptools.build_meta"
+requires = ["setuptools>=61", "setuptools_scm>=7", "wheel", "numpy>=2.0.0"]
 
 [tool.setuptools_scm]
 write_to = "pythonmodule/_version.py"
