@@ -64,7 +64,7 @@ jobs:
     needs: [generate_matrix]
     name: Build wheels on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
-    if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')
+    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')
     strategy:
       matrix:
         os: ${{ fromJson(needs.generate_matrix.outputs.OSES) }}
@@ -81,13 +81,14 @@ jobs:
           platforms: all
 
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.11.2
+        uses: pypa/cibuildwheel@v2.16.0
         env:
           CIBW_ARCHS_MACOS: "x86_64 arm64"
           CIBW_ARCHS_LINUX: ${{ fromJson(needs.generate_matrix.outputs.CIBW_ARCHS_LINUX) }}
-          CIBW_TEST_REQUIRES: pytest
-          CIBW_TEST_EXTRAS: "py36"
+          CIBW_TEST_REQUIRES: "pytest scikit-learn"
+          CIBW_BEFORE_BUILD: "pip install numpy>=2.0.0"
           CIBW_TEST_COMMAND: "pytest {package}/test"
+          CIBW_BUILD: "cp39-* cp310-* cp311-* cp312-*"
 
       - uses: actions/upload-artifact@v4
         with:
