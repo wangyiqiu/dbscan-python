@@ -180,6 +180,15 @@ static void printScheduler() {
 
 #else
 
+// Fix errors:
+#include <atomic>
+namespace parlay {
+  namespace internal {
+    extern inline void start_scheduler() {}
+    extern inline void stop_scheduler() {}
+  }
+}
+
 #define cilk_spawn
 #define cilk_sync
 #define parallel_main main
