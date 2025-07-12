@@ -139,26 +139,38 @@ namespace parlay {
       get_default_scheduler().stop();
     }
   }
+  inline bool sequential = false;
 
   inline size_t num_workers() {
-    return internal::get_default_scheduler().num_workers();
+    return sequential ? 1u : internal::get_default_scheduler().num_workers();
   }
 
   inline size_t worker_id() {
-    return internal::get_default_scheduler().worker_id();
+    return sequential ? 0u : internal::get_default_scheduler().worker_id();
   }
 
   template <class F>
   inline void parallel_for(size_t start, size_t end, F f,
 			   size_t granularity=0,
 			   bool conservative=false) {
-    if (end > start)
-      internal::get_default_scheduler().parfor(start, end, f, granularity, conservative);
+    if (end > start){
+      if (sequential){
+        for(size_t i=start; i<end; ++i) f(i);
+      }
+      else{
+        internal::get_default_scheduler().parfor(start, end, f, granularity, conservative);
+      }
+    }
   }
 
   template <typename Lf, typename Rf>
   inline void par_do(Lf left, Rf right, bool conservative=false) {
-    return internal::get_default_scheduler().pardo(left, right, conservative);
+    if (sequential) {
+      left(); right();
+    }
+    else {
+      internal::get_default_scheduler().pardo(left, right, conservative);
+    }
   }
 }
 
@@ -171,14 +183,23 @@ using namespace parlay;
 #define par_for_1 for
 #define par_for_256 for
 
-static int getWorkers() {return (int)num_workers();}
-static int getWorkerId() {return (int)worker_id();}
+static int getWorkers() {return sequential ? 1 : (int)num_workers();}
+static int getWorkerId() {return sequential ? 0 : (int)worker_id();}
 static void setWorkers(int n) { }
 static void printScheduler() {
   cout << "scheduler = Parlay-HomeGrown" << endl;
   cout << "num-threads = " << getWorkers() << endl;}
 
 #else
+
+// Fix errors:
+#include <atomic>
+namespace parlay {
+  namespace internal {
+    extern inline void start_scheduler() {}
+    extern inline void stop_scheduler() {}
+  }
+}
 
 #define cilk_spawn
 #define cilk_sync

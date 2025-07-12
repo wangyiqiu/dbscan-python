@@ -7,13 +7,13 @@
 static bool scheduler_initialized = false;
 static PyObject* scheduler_cleanup_weakref = nullptr;
 
-static void cleanup_scheduler(PyObject *capsule)
+static void cleanup_scheduler(PyObject *capsule=nullptr)
 {
- if (scheduler_initialized)
- {
-   parlay::internal::stop_scheduler();
-   scheduler_initialized = false;
- }
+    if (scheduler_initialized)
+    {
+        parlay::internal::stop_scheduler();
+        scheduler_initialized = false;
+    }
 }
 
 static void ensure_scheduler_initialized()
@@ -40,7 +40,7 @@ static PyObject* DBSCAN_py(PyObject* self, PyObject* args, PyObject *kwargs)
         return NULL;
     }
 
-    // Check the number of dimensions and that we actually recieved an np.ndarray
+    // Check the number of dimensions and that we actually received an np.ndarray
     X = (PyArrayObject*)PyArray_FROMANY(
         Xobj,
         NPY_DOUBLE,
@@ -79,7 +79,10 @@ static PyObject* DBSCAN_py(PyObject* self, PyObject* args, PyObject *kwargs)
     PyArrayObject* core_samples = (PyArrayObject*)PyArray_SimpleNew(1, &n, NPY_BOOL);
     PyArrayObject* labels = (PyArrayObject*)PyArray_SimpleNew(1, &n, NPY_INT);
 
-    ensure_scheduler_initialized();
+    if (!parlay::sequential)
+    {
+        ensure_scheduler_initialized();
+    }
 
     DBSCAN(
         dim,
@@ -98,9 +101,27 @@ static PyObject* DBSCAN_py(PyObject* self, PyObject* args, PyObject *kwargs)
     return result_tuple;
 }
 
+static PyObject* set_sequential_py(PyObject* self, PyObject* args)
+{
+    int state = 1;
+    if (!PyArg_ParseTuple(args, "|p", &state)) {
+        return nullptr;
+    }
+    parlay::sequential = state == 1;
+    if (parlay::sequential) {
+        cleanup_scheduler();
+    }
+    Py_RETURN_NONE;
+}
+
+static PyObject* get_sequential_py(PyObject* self, PyObject* args)
+{
+    return PyBool_FromLong(parlay::sequential ? 1 : 0);
+}
+
 PyDoc_STRVAR(doc_DBSCAN,
 "DBSCAN(X, eps=0.5, min_samples=5)\n--\n\n\
-Run DBSCAN on a set of n samples of dimension dim with a minimum seperation\n\
+Run DBSCAN on a set of n samples of dimension dim with a minimum separation\n\
 between the clusters (which must include at least min_samples) of eps. Points\n\
 that do not fit in any cluster are labeled as noise (-1).\n\
 \n\
@@ -113,7 +134,7 @@ Parameters\n\
 X : np.ndarray[tuple[n, dim], np.float64]\n\
     2-D array representing the samples.\n\
 eps : float\n\
-    minimum seperation between the clusters.\n\
+    minimum separation between the clusters.\n\
 min_samples : int\n\
     minimum number of samples in the clusters.\n\
 \n\
@@ -125,8 +146,31 @@ core_samples : np.ndarray[tuple[n], np.bool_]\n\
     is each sample the core sample of its cluster\n\
 \n");
 
+PyDoc_STRVAR(doc_set_sequential,
+"set_sequential(state=True)\n--\n\n\
+Set whether DBSCAN runs in sequential mode (single-threaded).\n\
+This mode is potentially more efficient.\n\
+\n\
+Parameters\n\
+----------\n\
+state : bool, default True\n\
+    If True, run sequentially. If False, allow parallel execution.\n\
+");
+
+PyDoc_STRVAR(doc_get_sequential,
+"get_sequential()\n--\n\n\
+Return the current state of the sequential setting.\n\
+\n\
+Returns\n\
+-------\n\
+state : bool\n\
+    True if running sequentially, False if in parallel mode.\n\
+");
+
 static struct PyMethodDef methods[] = {
     {"DBSCAN", (PyCFunction)(void*)(PyCFunctionWithKeywords) DBSCAN_py, METH_VARARGS | METH_KEYWORDS, doc_DBSCAN},
+    {"set_sequential", (PyCFunction)set_sequential_py, METH_VARARGS, doc_set_sequential},
+    {"get_sequential", (PyCFunction)get_sequential_py, METH_NOARGS, doc_get_sequential},
     {NULL, NULL, 0, NULL}
 };
 
